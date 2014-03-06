@@ -1,0 +1,21 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'application'
+
+/* Put your main class here */
+mainClassName = "Main"
+version = '0.0.1'
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.8'
+}
+
+repositories {
+    mavenCentral()
+}
+
+// Go to search.maven.org to find relevant packages
+dependencies {
+    compile 'junit:junit:4.11','org.hamcrest:hamcrest-all:1.3'
+    testCompile 'junit:junit:4.11','org.hamcrest:hamcrest-all:1.3'
+}
