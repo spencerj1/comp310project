@@ -12,7 +12,7 @@ Open Git Extensions.
 6. In the dialog box, for name, enter: `upstream`; for URL, enter: `https://github.com/lawrancej/comp310project.git`. Click Save changes. Click Yes, and follow any prompts. Close the Remote repositories dialog box.
 7. Click the Down arrow button to pull from the professor. You don't need to play with any of the options, just click Pull.
 
-# 7. Create your remote repository
+# 2. Create your remote repository
 
 Now create a place to submit your work, called a remote repository. **You need to ensure that your remote repository is private, otherwise I cannot post feedback to you for legal reasons (FERPA).** 
 
@@ -28,7 +28,7 @@ Now create a place to submit your work, called a remote repository. **You need t
 3. Once created, you will see your new remote repository. Bookmark this page in your browser, so you can get back to it later.
 4.  When Github confirms that you are a student, make the repository you created private by clicking on the wrench and screwdriver icon (it's **Settings**, not **Account settings**) and scroll down to the **Danger Zone** and click **Make private**. 
 
-# 8. Push to your remote repository
+# 3. Push to your remote repository
 
 So far, you have created a remote repository, but haven't submitted (pushed) anything to it yet.
 
@@ -39,3 +39,31 @@ Click I'm starting from scratch. Select the SSH URL appearing after `git remote 
 ## Github users
 
 Under Quick Setup, select and copy the SSH URL to the clipboard (It should look something like: `git@github.com:yourUserNameHere/comp310project.git`, not: `https://github.com/lawrancej/comp310.git`).
+
+## All users
+
+1. In Git Extensions, click Repository -> Remote repositories...
+2. Click New. Under Details, enter `origin` for the name, and paste the URL you copied earlier from Bitbucket or Github.
+3. Click Save Changes and then click Close.
+4. Click the Up arrow (Push). Click Push.
+5. Reload your Bitbucket or Github repository page. If all went well, you will see **COMP310: Data Structures**. 
+
+# 4. Share your repo with me and your friends and watch mine
+
+Right now, nobody but you can see your remote repository; you need to add me and your collaborators as a collaborator so that I can see the work you submit. Also, I will make updates frequently during the semester, and I won't email you when I make changes, so you'll want to watch my repository to receive change notifications.
+
+## Bitbucket users
+
+1. Click the gear icon to administrate your repository.
+2. Select **Access management**.
+3. Under Users, enter `lawrancej`, and click Add. Do the same for each of your collaborators on the project.
+4. [Go to my repository](https://bitbucket.org/lawrancej/comp310), and click the eye icon to watch it for changes.
+
+## Github users
+
+1. Click the wrench and screwdriver icon on the right side of the page (If you hover your mouse over it, it's **Settings**, not **Account settings**).
+2. Click **Collaborators**
+3. Enter `lawrancej`, and click Add. Do the same for each of your collaborators on the project.
+4. [Go to my repository](https://github.com/lawrancej/comp310), and click the eye icon to watch it for changes.
+
+Now we can see each other's stuff.
