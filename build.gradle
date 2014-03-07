@@ -1,6 +1,6 @@
 buildscript {
     repositories { mavenCentral() }
-    dependencies { classpath 'com.android.tools.build:gradle:0.7.+' }
+//    dependencies { classpath 'com.android.tools.build:gradle:0.7.+' }
 }
 
 allprojects {
@@ -39,7 +39,7 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
     }
 }
-
+/*
 project(":android") {
     apply plugin: "android"
 
@@ -52,3 +52,4 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
     }
 }
+*/
