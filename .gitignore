@@ -6,3 +6,4 @@
 **/.gradle
 **/.metadata
 **/*.orig
+/bin
