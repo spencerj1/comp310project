@@ -27,10 +27,10 @@ public class HelloApp extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
+		Gdx.gl.glClearColor(0, (float)0.5, 0, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		batch.begin();
-		batch.draw(img, 0, 0, 100, 200);
+		batch.draw(img, 20, 20, 100, 200);
 		batch.end();
 	}
 }
