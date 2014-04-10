@@ -9,6 +9,9 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 	
@@ -18,7 +21,9 @@ public class PokerGame extends ApplicationAdapter {
 	Texture img;
 	long time;
 	ImageButton img1, img2, img3, img4, img5, imgDeck;
-	Card card1, card2, card3, card4, card5;
+	List<Card> deck;
+	List<Card> hand;
+	//Card card1, card2, card3, card4, card5;
 	
 	@Override
 	public void create () {
@@ -26,37 +31,57 @@ public class PokerGame extends ApplicationAdapter {
 		
 		// The stage will respond to input from Gdx (keyboard, mouse, touch, game controller)
 		Gdx.input.setInputProcessor(stage);
-		List<Card> deck = Card.deck();
+		deck = Card.deck();
 		// Draw the cards (should later be put in a buttonListener method)
+		deck = shuffle(deck);
 		drawCards(deck);
+		//hand = sortCards(hand);
 		
-		// Create a button with two images
-		img1 = new ImageButton(
-				new SpriteDrawable(new Sprite(new Texture(card1.getImage()))));
-				//new SpriteDrawable(new Sprite(new Texture("3_of_clubs.png"))));
+		
+		updateCardImg();
+		/*// Create a button with two images
+		img1 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(hand.get(0).getImage()))));
+		img2 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(hand.get(1).getImage()))));
+		img3 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(hand.get(2).getImage()))));
+		img4 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(hand.get(3).getImage()))));
+		img5 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(hand.get(4).getImage()))));
 		
 		// Layout that button
-		img1.setSize(100, 200);
-		img1.setPosition(20, 20);
+		img1.setSize(200, 400);
+		img1.setPosition(40, 40);
+		img2.setSize(200, 400);
+		img2.setPosition(280, 40);
+		img3.setSize(200, 400);
+		img3.setPosition(520, 40);
+		img4.setSize(200, 400);
+		img4.setPosition(760, 40);
+		img5.setSize(200, 400);
+		img5.setPosition(1000, 40);*/
 		
 		// Handle events (aka controller in MVC)
 		img1.addListener(new InputListener() {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
-				System.out.println("Hi, down there!");
+				//System.out.println("Hi, down there!");
 				// Demonstrate that we can move the button around, too
-				img1.setPosition(img1.getX()+5, img1.getY()+5);
+				//img1.setPosition(img1.getX()+5, img1.getY()+5);
+				hand = sortCards(hand);
+				updateCardImg();
 				return true;
 			}
 			@Override
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				System.out.println("Hi, up there!");
+				//System.out.println("Hi, up there!");
 			}
 		}
 		);
 		
 		// The button is on the stage
 		stage.addActor(img1);
+		stage.addActor(img2);
+		stage.addActor(img3);
+		stage.addActor(img4);
+		stage.addActor(img5);
 //		batch = new SpriteBatch();
 //		img = new Texture(new Pixmap(Gdx.files.internal("2_of_clubs.png")));
 //		try {
@@ -76,16 +101,121 @@ public class PokerGame extends ApplicationAdapter {
 //		batch.draw(img, 20, 20, 100, 200);
 //		batch.end();
 		stage.draw();
-		if (System.currentTimeMillis() - time < 3000) { // This method enlarges a card
-			img1.setSize(img1.getWidth()+1, img1.getHeight()+1);
-		}
+		//if (System.currentTimeMillis() - time < 3000) { // This method enlarges a card
+		//	img1.setSize(img1.getWidth()+1, img1.getHeight()+1);
+		//}
+	}
+	
+	public void updateCardImg() {
+		// Delete existing images
+		if(img1 != null) img1.remove(); if(img2 != null) img2.remove(); if(img3 != null) img3.remove();
+		if(img4 != null) img4.remove(); if(img5 != null) img5.remove();
+		
+		
+		// Create a button with two images
+		System.out.println("Drawing - Size of Hand: " + hand.size());
+		img1 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(hand.get(0).getImage()))));
+		img2 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(hand.get(1).getImage()))));
+		img3 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(hand.get(2).getImage()))));
+		img4 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(hand.get(3).getImage()))));
+		img5 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(hand.get(4).getImage()))));
+			
+		// Layout that button
+		img1.setSize(200, 400);
+		img1.setPosition(40, 40);
+		img2.setSize(200, 400);
+		img2.setPosition(280, 40);
+		img3.setSize(200, 400);
+		img3.setPosition(520, 40);
+		img4.setSize(200, 400);
+		img4.setPosition(760, 40);
+		img5.setSize(200, 400);
+		img5.setPosition(1000, 40);
+		
+		stage.addActor(img1);
+		stage.addActor(img2);
+		stage.addActor(img3);
+		stage.addActor(img4);
+		stage.addActor(img5);
 	}
 	
 	public void drawCards(List<Card> deck) {
-		if (card1 != null) {
-			card1 = deck.get(0);
-			deck.remove(0);
+		hand = new ArrayList<Card>();
+		for (int i = 0; i < 5; i++) {
+			//hand.add(new Card(Card.Suit.SPADES, Card.Rank.ACE));
+			hand.add(deck.get(0));
+			this.deck.remove(0);
 		}
+	}
+	
+	public List<Card> shuffle(List<Card> deck) {
+		long seed = System.nanoTime();
+		Collections.shuffle(deck);
+		return deck;
+	}
+	
+	public int checkHand(List<Card> hand) { // returns a multiplier for payout
+		int mult = 0;
+		// Sort Cards
+		
+		// Find like kinds
+		
+		//for(int i = 0; i < 5; i++) {
+		//	int rank = hand.get(i).intRank();
+		//	for(int j = i; j < 5; j++) {
+		//		if();
+		//	}
+		//	kinds = tempKinds;
+		//}
+		
+		/*
+		 *  ROYAL FLUSH = 10
+			STRAIGHT FLUSH = 9
+			FOUR OF A KIND = 8
+		 	FULL HOUSE = 7
+		 	FLUSH = 6
+		 	STRAIGHT = 5
+		 	THREE OF A KIND = 4
+		 	TWO PAIRS = 3
+		 	ONE PAIR = 2
+		 	HIGH CARD = 1
+		 */
+		
+		return mult;
+	}
+	
+	public List<Card> sortCards(List<Card> hand) {
+		System.out.println("Size of hand BEFORE: " + hand.size());
+		if (hand.isEmpty()) return hand;
+		List<Card> sortedHand = new ArrayList<Card>();
+		// Add first card to sortedHand before iterating
+		sortedHand.add(hand.get(0));
+		hand.remove(0);
+		for(Card temp : hand) {
+			boolean placed = false;
+			Card here = null;
+			for(Card sortTemp : sortedHand) {
+				if(!placed && (temp.intRank() <= sortTemp.intRank())) {
+					here = sortTemp;
+					placed = true;
+				}
+			}
+			if(here == null)
+				sortedHand.add(temp);
+			else
+				sortedHand.add(sortedHand.indexOf(here), temp);
+				//here = sortedHand.get(sortedHand.size()-1);
+			
+		}
+		hand = sortedHand;
+		//updateCardImg();
+		System.out.println("Size of hand AFTER: " + sortedHand.size());
+		System.out.println("Cards sorted");
+		return sortedHand;
+	}
+	
+	public void updateHandImg() {
+		//img1.setBackground(background);
 	}
 }
 
