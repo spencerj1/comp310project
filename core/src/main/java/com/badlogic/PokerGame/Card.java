@@ -40,7 +40,7 @@ public class Card {
 		return image;
 	}
 	public int intRank() {
-		if (rank == Card.Rank.TWO) return 2;
+			 if (rank == Card.Rank.TWO) return 2;
 		else if (rank == Card.Rank.THREE) return 3;
 		else if (rank == Card.Rank.FOUR) return 4;
 		else if (rank == Card.Rank.FIVE) return 5;
@@ -53,6 +53,13 @@ public class Card {
 		else if (rank == Card.Rank.QUEEN) return 12;
 		else if (rank == Card.Rank.KING) return 13;
 		else if (rank == Card.Rank.ACE) return 14;
+		return 0;
+	}
+	public int intSuit() {
+			 if (suit == Card.Suit.SPADES) return 1;
+		else if (suit == Card.Suit.DIAMONDS) return 2;
+		else if (suit == Card.Suit.CLUBS) return 3;
+		else if (suit == Card.Suit.HEARTS) return 4;
 		return 0;
 	}
 }
