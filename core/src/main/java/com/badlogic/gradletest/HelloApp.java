@@ -61,8 +61,10 @@ public class HelloApp extends ApplicationAdapter {
 //			e.printStackTrace();
 //		}
 //		Bullet.init();
+		time = System.currentTimeMillis();
 	}
 
+	long time;
 	@Override
 	public void render () {
 		Gdx.gl.glClearColor(0, (float)0.5, 0, 1);
@@ -71,5 +73,8 @@ public class HelloApp extends ApplicationAdapter {
 //		batch.draw(img, 20, 20, 100, 200);
 //		batch.end();
 		stage.draw();
+		if (System.currentTimeMillis() - time < 3000) {
+			button.setSize(button.getWidth()+1, button.getHeight()+1);
+		}
 	}
 }
