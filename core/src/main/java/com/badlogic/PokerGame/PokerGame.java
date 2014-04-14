@@ -142,14 +142,14 @@ public class PokerGame extends ApplicationAdapter {
 		stage.addActor(cardback4);
 		stage.addActor(cardback5);
 		
-		comp = new ImageButton(new SpriteDrawable(new Sprite(new Texture("computer_hand.png"))));
-		user = new ImageButton(new SpriteDrawable(new Sprite(new Texture("your_hand.png"))));
+		//comp = new ImageButton(new SpriteDrawable(new Sprite(new Texture("computer_hand.png"))));
+		//user = new ImageButton(new SpriteDrawable(new Sprite(new Texture("your_hand.png"))));
 		
-		comp.setPosition(30, 740);
-		user.setPosition(30, 275);
+		//comp.setPosition(30, 740);
+		//user.setPosition(30, 275);
 		
-		stage.addActor(comp);
-		stage.addActor(user);
+		//stage.addActor(comp);
+		//stage.addActor(user);
 		
 	}
 	
