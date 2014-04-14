@@ -7,8 +7,8 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 public class PokerLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.height = 500;
-		config.width = 1000;
+		config.height = 800;
+		config.width = 1100;
 		new LwjglApplication(new PokerGame(), config);
 	}
 }
