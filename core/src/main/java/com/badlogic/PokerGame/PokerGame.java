@@ -119,11 +119,11 @@ public class PokerGame extends ApplicationAdapter {
 	
 	public void updateAiCards(){
 		
-		cardback1 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("card_back.png"))));
-		cardback2 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("card_back.png"))));
-		cardback3 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("card_back.png"))));
-		cardback4 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("card_back.png"))));
-		cardback5 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("card_back.png"))));
+		cardback1 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("CardBack.png"))));
+		cardback2 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("CardBack.png"))));
+		cardback3 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("CardBack.png"))));
+		cardback4 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("CardBack.png"))));
+		cardback5 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("CardBack.png"))));
 		
 		cardback1.setSize(120, 240);
 		cardback1.setPosition(30, 500);
@@ -142,14 +142,14 @@ public class PokerGame extends ApplicationAdapter {
 		stage.addActor(cardback4);
 		stage.addActor(cardback5);
 		
-		comp = new ImageButton(new SpriteDrawable(new Sprite(new Texture("computer_hand.png"))));
+		/*comp = new ImageButton(new SpriteDrawable(new Sprite(new Texture("computer_hand.png"))));
 		user = new ImageButton(new SpriteDrawable(new Sprite(new Texture("your_hand.png"))));
 		
 		comp.setPosition(30, 740);
 		user.setPosition(30, 275);
 		
 		stage.addActor(comp);
-		stage.addActor(user);
+		stage.addActor(user);*/
 		
 	}
 	

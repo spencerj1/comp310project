@@ -1,4 +1,3 @@
-
 package com.badlogic.gradletest;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
