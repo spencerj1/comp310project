@@ -33,8 +33,13 @@ public class Card {
 		}
 		return deck;
 	}
-	public String toString() {
+	 public String toString() {
+		if(rank.name.toLowerCase().equals("jack") || rank.name.toLowerCase().equals("queen")
+				 || rank.name.toLowerCase().equals("king")){
+			return String.format("%s_of_%s2.png", rank.name.toLowerCase(), suit.name().toLowerCase());
+		}else{
 		return String.format("%s_of_%s.png", rank.name.toLowerCase(), suit.name().toLowerCase());
+		}
 	}
 	public String getImage() {
 		return image;
