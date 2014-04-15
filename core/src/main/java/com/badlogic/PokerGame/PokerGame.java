@@ -34,7 +34,7 @@ public class PokerGame extends ApplicationAdapter {
 	ImageButton btnComp, btnUser, btnSort;
 
 	Skin skin;
-	List<Card> deck, hand, aihand, swap;
+	List<Card> deck, hand = new ArrayList<Card>(), aihand, swap;
 	
 	@Override
 	public void create () {
@@ -60,6 +60,11 @@ public class PokerGame extends ApplicationAdapter {
 		// Draw the cards (should later be put in a buttonListener method)
 		deck = shuffle(deck);
 		hand = drawCards(deck);
+		/*hand.add(deck.get(9));
+		hand.add(deck.get(10));
+		hand.add(deck.get(11));
+		hand.add(deck.get(12));
+		hand.add(deck.get(0));*/
 		aihand = drawCards(deck);
 		updateCardImg();
 		updateAiCards();
@@ -123,13 +128,6 @@ public class PokerGame extends ApplicationAdapter {
 		img4 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(hand.get(3).getImage()))));
 		img5 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(hand.get(4).getImage()))));
 		
-		//Create ai hand
-		aicard1 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(aihand.get(0).getImage()))));
-		aicard2 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(aihand.get(1).getImage()))));
-		aicard3 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(aihand.get(2).getImage()))));
-		aicard4 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(aihand.get(3).getImage()))));
-		aicard5 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(aihand.get(4).getImage()))));
-		
 		// Layout the card buttons
 		img1.setSize(120, 240);
 		img1.setPosition(30, 70);
@@ -142,6 +140,32 @@ public class PokerGame extends ApplicationAdapter {
 		img5.setSize(120, 240);
 		img5.setPosition(630, 70);
 		
+		stage.addActor(img1);
+		stage.addActor(img2);
+		stage.addActor(img3);
+		stage.addActor(img4);
+		stage.addActor(img5);
+
+	}
+	
+	public void updateAiCards(){
+		// Delete existing images
+		if(cardback1 != null) cardback1.remove(); if(cardback2 != null) cardback2.remove(); if(cardback3 != null)cardback3.remove();
+		if(cardback4 != null) cardback4.remove(); if(cardback5 != null) cardback5.remove();
+		
+		//Create ai hand
+		aicard1 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(aihand.get(0).getImage()))));
+		aicard2 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(aihand.get(1).getImage()))));
+		aicard3 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(aihand.get(2).getImage()))));
+		aicard4 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(aihand.get(3).getImage()))));
+		aicard5 = new ImageButton(new SpriteDrawable(new Sprite(new Texture(aihand.get(4).getImage()))));
+				
+		cardback1 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("CardBack.png"))));
+		cardback2 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("CardBack.png"))));
+		cardback3 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("CardBack.png"))));
+		cardback4 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("CardBack.png"))));
+		cardback5 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("CardBack.png"))));
+		
 		aicard1.setSize(120, 240);
 		aicard1.setPosition(30, 500);
 		aicard2.setSize(120, 240);
@@ -152,30 +176,6 @@ public class PokerGame extends ApplicationAdapter {
 		aicard4.setPosition(480, 500);
 		aicard5.setSize(120, 240);
 		aicard5.setPosition(630, 500);
-		
-		stage.addActor(img1);
-		stage.addActor(img2);
-		stage.addActor(img3);
-		stage.addActor(img4);
-		stage.addActor(img5);
-		
-		stage.addActor(aicard1);
-		stage.addActor(aicard2);
-		stage.addActor(aicard3);
-		stage.addActor(aicard4);
-		stage.addActor(aicard5);
-	}
-	
-	public void updateAiCards(){
-		// Delete existing images
-		if(cardback1 != null) cardback1.remove(); if(cardback2 != null) cardback2.remove(); if(cardback3 != null)cardback3.remove();
-		if(cardback4 != null) cardback4.remove(); if(cardback5 != null) cardback5.remove();
-		
-		cardback1 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("CardBack.png"))));
-		cardback2 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("CardBack.png"))));
-		cardback3 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("CardBack.png"))));
-		cardback4 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("CardBack.png"))));
-		cardback5 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("CardBack.png"))));
 		
 		cardback1.setSize(120, 240);
 		cardback1.setPosition(30, 500);
@@ -188,25 +188,55 @@ public class PokerGame extends ApplicationAdapter {
 		cardback5.setSize(120, 240);
 		cardback5.setPosition(630, 500);
 		
+		stage.addActor(aicard1);
+		stage.addActor(aicard2);
+		stage.addActor(aicard3);
+		stage.addActor(aicard4);
+		stage.addActor(aicard5);
 		stage.addActor(cardback1);
 		stage.addActor(cardback2);
 		stage.addActor(cardback3);
 		stage.addActor(cardback4);
 		stage.addActor(cardback5);
 		
+		cardback1.addAction(fadeOut(0));
+		cardback2.addAction(fadeOut(0));
+		cardback3.addAction(fadeOut(0));
+		cardback4.addAction(fadeOut(0));
+		cardback5.addAction(fadeOut(0));
+		
 		cardback1.addListener(new InputListener() {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
+				int userScore, aiScore;
 				System.out.println("Card Back 1 pressed");
 				cardback1.addAction(fadeOut(1));
 				cardback2.addAction(fadeOut(1));
 				cardback3.addAction(fadeOut(1));
 				cardback4.addAction(fadeOut(1));
 				cardback5.addAction(fadeOut(1));
-				String userhand = checkHand(hand);
-				System.out.println("Your hand = " + userhand);
-				String comphand = checkHand(aihand);
-				System.out.println("Computer hand = " + comphand);
+				hand = sortCards(hand);
+				aihand = sortCards(aihand);
+				System.out.print("User ");
+				userScore = checkHand(hand); // put this into different button listener, for check hand
+				System.out.print("AI ");
+				aiScore = checkHand(aihand);
+				if(userScore > aiScore) {
+					System.out.println("You Win!");
+				}
+				else if(userScore < aiScore) {
+					System.out.println("AI Wins :( ");
+				}
+				else {
+					if(hand.get(4).intRank() > aihand.get(4).intRank()) {
+						System.out.println("You Win!");
+					}
+					else if(hand.get(4).intRank() < aihand.get(4).intRank())
+						System.out.println("AI Wins :( ");
+					else
+						System.out.println("Tie Game");
+				}
+				
 				return true;
 			}
 		});
@@ -244,72 +274,76 @@ public class PokerGame extends ApplicationAdapter {
 		return list;
 	}
 	
-	public String checkHand(List<Card> hand) { // returns a multiplier for payout
+	public int checkHand(List<Card> paramHand) {
 		
-		hand = sortCards(hand);
+		List<Card> tempHand = sortCards(paramHand);
+		int handStrength = 0;
 		String handname = "nothing";
-		boolean Straight = false;
-		boolean Flush = false;
 		
 		//Detect two of a kind
 		int kind = 0;
 		for (int i = 0; i < 5; i++){
 			for(int j = i + 1; j < 5; j++){
-				if (hand.get(i).intRank() == hand.get(j).intRank()){
+				if (tempHand.get(i).intRank() == tempHand.get(j).intRank()){
 					//handname = "Two of a Kind";
 					//break;
 					kind ++;
 				}
 			}
 		}
-		if(kind == 3)
+		if(kind == 6) {
 			handname = "Four of a Kind";
-		else if(kind == 2)
+			handStrength = 8;
+		}
+		else if(kind == 4) {
+			handname = "Full House";
+			handStrength = 7;
+		}
+		else if(kind == 3) {
 			handname = "Three of a Kind";
-		else if(kind == 1)
+			handStrength = 4;
+		}
+		else if(kind == 2) {
+			handname = "Two Pairs";
+			handStrength = 3;
+		}
+		else if(kind == 1) {
 			handname = "Two of a Kind";
-			
-		//Detect three of a kind
-		/*for (int i = 0; i < 5; i++){
-			for(int j = i + 1; j < 5; j++){
-				if (hand.get(i).intRank() == hand.get(j).intRank()){
-					handname = "Two of a Kind";
-					System.out.print(handname + handnum);
-					break;
-				}
-			}
-		}*/
-		
-		//Detect four of a kind
-		
-		//Detect full house
+			handStrength = 2;
+		}
 		
 		//Detect straight
-		if ((hand.get(0).intRank() == (hand.get(1).intRank() - 1))
-				&& (hand.get(1).intRank() == (hand.get(2).intRank() - 1))
-				&& (hand.get(2).intRank() == (hand.get(3).intRank() - 1))
-				&& (hand.get(3).intRank() == (hand.get(4).intRank() - 1))){
+		if ((tempHand.get(0).intRank() == (tempHand.get(1).intRank() - 1))
+				&& (tempHand.get(1).intRank() == (tempHand.get(2).intRank() - 1))
+				&& (tempHand.get(2).intRank() == (tempHand.get(3).intRank() - 1))
+				&& (tempHand.get(3).intRank() == (tempHand.get(4).intRank() - 1))){
 				handname = "Straight";
-				Straight = true;
+				handStrength = 5;
 		}
 		
 		
 		//Detect flush
-		if ((hand.get(0).intSuit() == (hand.get(1).intSuit()))
-				&& (hand.get(1).intSuit() == (hand.get(2).intSuit()))
-				&& (hand.get(2).intSuit() == (hand.get(3).intSuit()))
-				&& (hand.get(3).intSuit() == (hand.get(4).intSuit()))){
+		if ((tempHand.get(0).intSuit() == (tempHand.get(1).intSuit()))
+				&& (tempHand.get(1).intSuit() == (tempHand.get(2).intSuit()))
+				&& (tempHand.get(2).intSuit() == (tempHand.get(3).intSuit()))
+				&& (tempHand.get(3).intSuit() == (tempHand.get(4).intSuit()))){
 				handname = "Flush";
-				Flush = true;
+				if(handStrength == 5) {
+					handStrength = 9;
+					handname = "Straight Flush";
+					if(tempHand.get(4).intRank() == 14) {
+						handStrength = 10;
+						handname = "Royal Flush";
+					}
+						
+				}
+				else
+					handStrength = 6;
 		}
 		
+		System.out.println("Hand = " + handname);
 		
-		//Detect straight flush
-		if (Flush == true && Straight == true){
-				handname = " Straight Flush";
-		}
-		
-		return handname;
+		return handStrength;
 	}
 	
 	
@@ -336,8 +370,10 @@ public class PokerGame extends ApplicationAdapter {
 				sortedHand.add(sortedHand.indexOf(here), temp);
 			
 		}
-		hand = sortedHand;
+		//hand = sortedHand;
 		System.out.println("SORTED");
+		if(sortedHand.size() < 5)
+			System.out.println("ERROR: SIZE OF HAND = " + sortedHand.size());
 		return sortedHand;
 	}
 	
@@ -347,6 +383,7 @@ public class PokerGame extends ApplicationAdapter {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("btnSort pressed");
 				hand = sortCards(hand);
+				aihand = sortCards(aihand);
 				updateCardImg();
 				updateAiCards();
 				return true;
