@@ -264,7 +264,7 @@ public class PokerGame extends ApplicationAdapter {
 		}
 		if(kind == 3)
 			handname = "Four of a Kind";
-		else if(kind == 2)
+		else if(kind == 3)
 			handname = "Three of a Kind";
 		else if(kind == 1)
 			handname = "Two of a Kind";
