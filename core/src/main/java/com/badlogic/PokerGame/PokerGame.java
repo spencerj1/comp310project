@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -23,12 +24,15 @@ import java.util.List;
 public class PokerGame extends ApplicationAdapter {
 	Stage stage;
 	boolean quit = false;
-	//SpriteBatch batch;
-	//Texture img;
+	boolean sortHover = false;
+	SpriteBatch batch;
+	Texture backgroundTexture;
+	Sprite background;
 	//long time = System.currentTimeMillis();
 	ImageButton img1, img2, img3, img4, img5, imgDeck, bet5, bet10, bet25, bet100, cardback1,
 	cardback2, cardback3, cardback4, cardback5, aicard1, aicard2, aicard3, aicard4, aicard5;
-	ImageButton comp, user;
+	ImageButton btnComp, btnUser, btnSort;
+
 	Skin skin;
 	List<Card> deck, hand, aihand, swap;
 	
@@ -40,12 +44,23 @@ public class PokerGame extends ApplicationAdapter {
 		
 		// The stage will respond to input from Gdx (keyboard, mouse, touch, game controller)
 		Gdx.input.setInputProcessor(stage);
+		batch = new SpriteBatch();
+		backgroundTexture = new Texture("greenfelt.png");
+		background = new Sprite(backgroundTexture);
+		background.setSize(1100, 800);
+		background.setPosition(0, 0);
+		btnSort = new ImageButton(new SpriteDrawable(new Sprite(new Texture("SortCardsPlain.png"))));
+		btnSort.setPosition(265, 0);
+		stage.addActor(btnSort);
+		addBtnSortListener();
+		
+		//stage.addActor(background);
 		deck = Card.deck();
 		
 		// Draw the cards (should later be put in a buttonListener method)
 		deck = shuffle(deck);
-		drawCards(deck);
-		drawAiCards(deck);
+		hand = drawCards(deck);
+		aihand = drawCards(deck);
 		updateCardImg();
 		updateAiCards();
 		addCardListeners();
@@ -56,11 +71,45 @@ public class PokerGame extends ApplicationAdapter {
 	public void render () {
 		Gdx.gl.glClearColor(0, (float)0.5, 0, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		
+		// Check mouse hover over btnSort
+		if(sortHover)
+			if(!btnSort.isOver()) {
+				sortHover = false;
+				btnSort.remove();
+				btnSort = new ImageButton(new SpriteDrawable(new Sprite(new Texture("SortCardsPlain.png"))));
+				btnSort.setPosition(265, 0);
+				stage.addActor(btnSort);
+			}
+			else;
+		else
+			if(btnSort.isOver()) {
+				sortHover = true;
+				btnSort.remove();
+				btnSort = new ImageButton(new SpriteDrawable(new Sprite(new Texture("SortCardsGlow.png"))));
+				btnSort.setPosition(265, 0);
+				stage.addActor(btnSort);
+				addBtnSortListener();
+			}
+			
+		// Draw Sprites (background)
+		batch.begin();
+		background.draw(batch);
+		batch.end();
+		// Draw Imagebuttons and other actors (foreground)
 		stage.act();
 		stage.draw();
+		
 		if(quit)
 			Gdx.app.exit();
 	}
+	
+	@Override
+    public void dispose() {
+		// dispose of Spritebatch and all textures
+        batch.dispose();
+        backgroundTexture.dispose();
+    }
 	
 	public void updateCardImg() {
 		// Delete existing images
@@ -83,15 +132,15 @@ public class PokerGame extends ApplicationAdapter {
 		
 		// Layout the card buttons
 		img1.setSize(120, 240);
-		img1.setPosition(30, 30);
+		img1.setPosition(30, 70);
 		img2.setSize(120, 240);
-		img2.setPosition(180, 30);
+		img2.setPosition(180, 70);
 		img3.setSize(120, 240);
-		img3.setPosition(330, 30);
+		img3.setPosition(330, 70);
 		img4.setSize(120, 240);
-		img4.setPosition(480, 30);
+		img4.setPosition(480, 70);
 		img5.setSize(120, 240);
-		img5.setPosition(630, 30);
+		img5.setPosition(630, 70);
 		
 		aicard1.setSize(120, 240);
 		aicard1.setPosition(30, 500);
@@ -118,6 +167,9 @@ public class PokerGame extends ApplicationAdapter {
 	}
 	
 	public void updateAiCards(){
+		// Delete existing images
+		if(cardback1 != null) cardback1.remove(); if(cardback2 != null) cardback2.remove(); if(cardback3 != null)cardback3.remove();
+		if(cardback4 != null) cardback4.remove(); if(cardback5 != null) cardback5.remove();
 		
 		cardback1 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("CardBack.png"))));
 		cardback2 = new ImageButton(new SpriteDrawable(new Sprite (new Texture("CardBack.png"))));
@@ -142,32 +194,50 @@ public class PokerGame extends ApplicationAdapter {
 		stage.addActor(cardback4);
 		stage.addActor(cardback5);
 		
-		/*comp = new ImageButton(new SpriteDrawable(new Sprite(new Texture("computer_hand.png"))));
-		user = new ImageButton(new SpriteDrawable(new Sprite(new Texture("your_hand.png"))));
+		cardback1.addListener(new InputListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
+				System.out.println("Card Back 1 pressed");
+				cardback1.addAction(fadeOut(1));
+				cardback2.addAction(fadeOut(1));
+				cardback3.addAction(fadeOut(1));
+				cardback4.addAction(fadeOut(1));
+				cardback5.addAction(fadeOut(1));
+				String userhand = checkHand(hand);
+				System.out.println("Your hand = " + userhand);
+				String comphand = checkHand(aihand);
+				System.out.println("Computer hand = " + comphand);
+				return true;
+			}
+		});
 		
-		comp.setPosition(30, 740);
-		user.setPosition(30, 275);
+		/*btnComp = new ImageButton(new SpriteDrawable(new Sprite(new Texture("computer_hand.png"))));
+		btnUser = new ImageButton(new SpriteDrawable(new Sprite(new Texture("your_hand.png"))));
 		
-		stage.addActor(comp);
-		stage.addActor(user);*/
+		btnComp.setPosition(30, 740);
+		btnUser.setPosition(30, 275);
+		
+		stage.addActor(btnComp);
+		stage.addActor(btnUser);*/
 		
 	}
 	
-	public void drawCards(List<Card> deck) {
-		hand = new ArrayList<Card>();
+	public List<Card> drawCards(List<Card> deck) {
+		List<Card> hand = new ArrayList<Card>();
 		for (int i = 0; i < 5; i++) {
 			hand.add(deck.get(0));
 			this.deck.remove(0);
 		}
+		return hand;
 	}
 	
-	public void drawAiCards(List<Card> deck) {
+	/*public void drawAiCards(List<Card> deck) {
 		aihand = new ArrayList<Card>();
 		for (int i = 0; i < 5; i++) {
 			aihand.add(deck.get(0));
 			this.deck.remove(0);
 		}
-	}
+	}*/
 	
 	public List<Card> shuffle(List<Card> list) {
 		Collections.shuffle(list);
@@ -271,13 +341,25 @@ public class PokerGame extends ApplicationAdapter {
 		return sortedHand;
 	}
 	
+	public void addBtnSortListener() {
+		btnSort.addListener(new InputListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
+				System.out.println("btnSort pressed");
+				hand = sortCards(hand);
+				updateCardImg();
+				updateAiCards();
+				return true;
+				
+			}
+		});
+	}
+	
 	public void addCardListeners() {
 		img1.addListener(new InputListener() {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("Card 1 pressed");
-				hand = sortCards(hand); // relocate these later to button for sorting
-				updateCardImg();		// this one too
 				img1.setColor(Color.BLUE);
 				return true;
 				
@@ -312,24 +394,6 @@ public class PokerGame extends ApplicationAdapter {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("Card 5 pressed");
 				img5.addAction(fadeOut(1));  // This is how to do an action
-				return true;
-			}
-		});
-		cardback1.addListener(new InputListener() {
-			@Override
-			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
-				String userhand;
-				String comphand;
-				System.out.println("Card Back 1 pressed");
-				cardback1.addAction(fadeOut(1));
-				cardback2.addAction(fadeOut(1));
-				cardback3.addAction(fadeOut(1));
-				cardback4.addAction(fadeOut(1));
-				cardback5.addAction(fadeOut(1));
-				userhand = checkHand(hand);
-				System.out.println("Your hand = " + userhand);
-				comphand = checkHand(aihand);
-				System.out.println("Computer hand = " + comphand);
 				return true;
 			}
 		});
