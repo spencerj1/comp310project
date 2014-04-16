@@ -58,26 +58,31 @@ public class PokerGame extends ApplicationAdapter {
 		menu.setSize(800, 800);
 		menu.setPosition(800, 0);
 		// Add buttons
-		/*bet5 = new ImageButton(new SpriteDrawable(new Sprite(new Texture("5_chip.png"))));
+		bet5 = new ImageButton(new SpriteDrawable(new Sprite(new Texture("5_chip.png"))));
 		bet25 = new ImageButton(new SpriteDrawable(new Sprite(new Texture("25_chip.png"))));
 		bet50 = new ImageButton(new SpriteDrawable(new Sprite(new Texture("50_chip.png"))));
-		bet100 = new ImageButton(new SpriteDrawable(new Sprite(new Texture("100_chip.png"))));*/
+		bet100 = new ImageButton(new SpriteDrawable(new Sprite(new Texture("100_chip.png"))));
 		btnSort = new ImageButton(new SpriteDrawable(new Sprite(new Texture("SortCardsPlain.png"))));
 		btnFold = new ImageButton(new SpriteDrawable(new Sprite(new Texture("foldPlain.png"))));
-		/*bet5.setPosition(820, 250);
-		bet25.setPosition(870, 250);
-		bet50.setPosition(920, 250);
-		bet100.setPosition(970, 250);*/
+		bet5.setSize(120, 120);
+		bet25.setSize(120, 120);
+		bet50.setSize(120, 120);
+		bet100.setSize(120, 120);
+		bet5.setPosition(850, 200);
+		bet25.setPosition(970, 200);
+		bet50.setPosition(850, 80);
+		bet100.setPosition(970, 80);
 		btnSort.setPosition(265, 0);
 		btnFold.setPosition(830, 400);
-		/*stage.addActor(bet5);
+		stage.addActor(bet5);
 		stage.addActor(bet25);
 		stage.addActor(bet50);
-		stage.addActor(bet100);*/
+		stage.addActor(bet100);
 		stage.addActor(btnSort);
 		stage.addActor(btnFold);
 		
-		//stage.addActor(background);
+
+		// Create deck
 		deck = Card.deck();
 		
 		// Draw the cards (should later be put in a buttonListener method)
@@ -91,7 +96,10 @@ public class PokerGame extends ApplicationAdapter {
 		aihand = drawCards(deck);
 		updateCardImg();
 		updateAiCards();
+		
+		// Add button listeners
 		addCardListeners();
+		addChipListeners();
 		
 	}
 		
@@ -373,7 +381,6 @@ public class PokerGame extends ApplicationAdapter {
 						handStrength = 10;
 						handname = "Royal Flush";
 					}
-						
 				}
 				else
 					handStrength = 6;
@@ -384,6 +391,11 @@ public class PokerGame extends ApplicationAdapter {
 		return handStrength;
 	}
 	
+	public int checkHighCard(List<Card> hand) {
+		
+		
+		return 0;
+	}
 	
 	public List<Card> sortCards(List<Card> hand) {
 		if (hand.isEmpty()) return hand;
@@ -412,6 +424,7 @@ public class PokerGame extends ApplicationAdapter {
 		System.out.println("SORTED");
 		if(sortedHand.size() < 5)
 			System.out.println("ERROR: SIZE OF HAND = " + sortedHand.size());
+		java.util.Arrays.fill(swap, false);
 		return sortedHand;
 	}
 	
@@ -427,6 +440,7 @@ public class PokerGame extends ApplicationAdapter {
 		
 		// Take out cards from hand
 		if(swap[0]) {
+			//img1.addAction();
 			deck.add(hand.get(0));
 			hand.remove(0);
 			hand.add(0, deck.get(0));
@@ -546,6 +560,65 @@ public class PokerGame extends ApplicationAdapter {
 		});
 	}
 
+	public void addChipListeners() {
+		bet5.addListener(new InputListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
+				System.out.println("Bet 5 Pressed");
+				bet5.setSize(100, 100);
+				bet5.setPosition(860, 210);
+				return true;
+			}
+			@Override
+			public void touchUp(InputEvent event, float x, float y, int pointer, int mouseButton) {
+				bet5.setSize(120, 120);
+				bet5.setPosition(850, 200);
+			}
+		});
+		bet25.addListener(new InputListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
+				System.out.println("Bet 25 Pressed");
+				bet25.setSize(100, 100);
+				bet25.setPosition(980, 210);
+				return true;
+			}
+			@Override
+			public void touchUp(InputEvent event, float x, float y, int pointer, int mouseButton) {
+				bet25.setSize(120, 120);
+				bet25.setPosition(970, 200);
+			}
+		});
+		bet50.addListener(new InputListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
+				System.out.println("Bet 50 Pressed");
+				bet50.setSize(100, 100);
+				bet50.setPosition(860, 90);
+				return true;
+			}
+			@Override
+			public void touchUp(InputEvent event, float x, float y, int pointer, int mouseButton) {
+				bet50.setSize(120, 120);
+				bet50.setPosition(850, 80);
+			}
+		});
+		bet100.addListener(new InputListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
+				System.out.println("Bet 100 Pressed");
+				bet100.setSize(100, 100);
+				bet100.setPosition(980, 90);
+				return true;
+			}
+			@Override
+			public void touchUp(InputEvent event, float x, float y, int pointer, int mouseButton) {
+				bet100.setSize(120, 120);
+				bet100.setPosition(970, 80);
+			}
+		});
+	}
+	
 	public void addBtnSortListener() {
 		btnSort.addListener(new InputListener() {
 			@Override
