@@ -114,7 +114,8 @@ public class PokerGame extends ApplicationAdapter {
 						sortHover = false;
 						btnSort.remove();
 						btnSort = new ImageButton(new SpriteDrawable(new Sprite(new Texture("SortCardsPlain.png"))));
-						btnSort.setPosition(265, 0);
+						btnSort.setSize(160, 80);
+						btnSort.setPosition(10, 0);
 						stage.addActor(btnSort);
 					}
 					else;
@@ -123,7 +124,8 @@ public class PokerGame extends ApplicationAdapter {
 						sortHover = true;
 						btnSort.remove();
 						btnSort = new ImageButton(new SpriteDrawable(new Sprite(new Texture("SortCardsGlow.png"))));
-						btnSort.setPosition(265, 0);
+						btnSort.setSize(160, 80);
+						btnSort.setPosition(10, 0);
 						stage.addActor(btnSort);
 						addBtnListeners();
 					}
@@ -288,7 +290,8 @@ public class PokerGame extends ApplicationAdapter {
 		
 		
 		btnSort = new ImageButton(new SpriteDrawable(new Sprite(new Texture("SortCardsPlain.png"))));
-		btnSort.setPosition(265, 0);
+		btnSort.setSize(160, 80);
+		btnSort.setPosition(10, 0);
 		stage.addActor(btnSort);
 		addBtnListeners();
 		
@@ -465,13 +468,17 @@ public class PokerGame extends ApplicationAdapter {
 				}
 				else {
 					System.out.println("Tie Game");
-					if(hand.get(4).intRank() > aihand.get(4).intRank())
+					if(checkTieGameWinner(userScore)) // user wins
+						System.out.println("You Win!");
+					else
+						System.out.println("AI Wins :( ");
+				}
+					/*if(hand.get(4).intRank() > aihand.get(4).intRank())
 						System.out.println("You Win!");
 					else if(hand.get(4).intRank() < aihand.get(4).intRank())
 						System.out.println("AI Wins :( ");
 					else
-						System.out.println("Tie Game");
-				}
+						System.out.println("Tie Game");*/
 				
 				return true;
 			}
@@ -628,6 +635,21 @@ public class PokerGame extends ApplicationAdapter {
 		return handStrength;
 	}
 	
+	public boolean checkTieGameWinner(int handType) {
+		int userHighCard = 0;
+		if(handType == 2 || handType == 3 || handType == 4 || handType == 7 || handType == 8) {
+			// Checks highest card in kinds
+			for (int i = 0; i < 5; i++)
+				for(int j = i + 1; j < 5; j++)
+					if (hand.get(i).intRank() > userHighCard)
+						userHighCard = hand.get(i).intRank();
+		}
+		
+
+		
+		return false;
+		
+	}
 	
 	public List<Card> sortCards(List<Card> hand) {
 		if (hand.isEmpty()) return hand;
