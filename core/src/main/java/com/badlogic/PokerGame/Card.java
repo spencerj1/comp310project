@@ -61,10 +61,10 @@ public class Card {
 		return 0;
 	}
 	public int intSuit() {
-			 if (suit == Card.Suit.SPADES) return 1;
-		else if (suit == Card.Suit.DIAMONDS) return 2;
-		else if (suit == Card.Suit.CLUBS) return 3;
-		else if (suit == Card.Suit.HEARTS) return 4;
+		     if (suit == Card.Suit.HEARTS) return 1;
+		else if (suit == Card.Suit.CLUBS) return 2;
+		else if (suit == Card.Suit.DIAMONDS) return 3;
+		else if (suit == Card.Suit.SPADES) return 4; 
 		return 0;
 	}
 }
