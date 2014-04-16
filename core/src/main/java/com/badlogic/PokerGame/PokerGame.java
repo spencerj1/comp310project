@@ -25,6 +25,7 @@ public class PokerGame extends ApplicationAdapter {
 	Stage stage;
 	boolean quit = false;
 	boolean sortHover = false;
+	int cardHeight = 70;
 	SpriteBatch batch;
 	Texture backgroundTexture;
 	Sprite background;
@@ -130,15 +131,15 @@ public class PokerGame extends ApplicationAdapter {
 		
 		// Layout the card buttons
 		img1.setSize(120, 240);
-		img1.setPosition(30, 70);
+		img1.setPosition(30, cardHeight);
 		img2.setSize(120, 240);
-		img2.setPosition(180, 70);
+		img2.setPosition(180, cardHeight);
 		img3.setSize(120, 240);
-		img3.setPosition(330, 70);
+		img3.setPosition(330, cardHeight);
 		img4.setSize(120, 240);
-		img4.setPosition(480, 70);
+		img4.setPosition(480, cardHeight);
 		img5.setSize(120, 240);
-		img5.setPosition(630, 70);
+		img5.setPosition(630, cardHeight);
 		
 		stage.addActor(img1);
 		stage.addActor(img2);
@@ -208,7 +209,7 @@ public class PokerGame extends ApplicationAdapter {
 		cardback1.addListener(new InputListener() {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
-				int userScore, aiScore;
+				int userScore = 0, aiScore = 0;
 				System.out.println("Card Back 1 pressed");
 				cardback1.addAction(fadeOut(1));
 				cardback2.addAction(fadeOut(1));
@@ -228,9 +229,9 @@ public class PokerGame extends ApplicationAdapter {
 					System.out.println("AI Wins :( ");
 				}
 				else {
-					if(hand.get(4).intRank() > aihand.get(4).intRank()) {
+					System.out.println("Tie Game");
+					if(hand.get(4).intRank() > aihand.get(4).intRank())
 						System.out.println("You Win!");
-					}
 					else if(hand.get(4).intRank() < aihand.get(4).intRank())
 						System.out.println("AI Wins :( ");
 					else
@@ -261,14 +262,6 @@ public class PokerGame extends ApplicationAdapter {
 		return hand;
 	}
 	
-	/*public void drawAiCards(List<Card> deck) {
-		aihand = new ArrayList<Card>();
-		for (int i = 0; i < 5; i++) {
-			aihand.add(deck.get(0));
-			this.deck.remove(0);
-		}
-	}*/
-	
 	public List<Card> shuffle(List<Card> list) {
 		Collections.shuffle(list);
 		return list;
@@ -276,21 +269,22 @@ public class PokerGame extends ApplicationAdapter {
 	
 	public int checkHand(List<Card> paramHand) {
 		
-		List<Card> tempHand = sortCards(paramHand);
+		List<Card> tempHand = new ArrayList<Card>();// = paramHand;
+		for(Card temp : paramHand)
+			tempHand.add(temp);
+		tempHand = sortCards(tempHand);
+		if(tempHand.size() < 5)
+			System.out.println("ERROR2: SIZE OF HAND = " + tempHand.size());
 		int handStrength = 0;
 		String handname = "nothing";
 		
 		//Detect two of a kind
 		int kind = 0;
-		for (int i = 0; i < 5; i++){
-			for(int j = i + 1; j < 5; j++){
-				if (tempHand.get(i).intRank() == tempHand.get(j).intRank()){
-					//handname = "Two of a Kind";
-					//break;
+		for (int i = 0; i < 5; i++)
+			for(int j = i + 1; j < 5; j++)
+				if (tempHand.get(i).intRank() == tempHand.get(j).intRank())
 					kind ++;
-				}
-			}
-		}
+		
 		if(kind == 6) {
 			handname = "Four of a Kind";
 			handStrength = 8;
@@ -398,8 +392,8 @@ public class PokerGame extends ApplicationAdapter {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("Card 1 pressed");
 				img1.setColor(Color.BLUE);
-				return true;
 				
+				return true;
 			}
 		});
 		img2.addListener(new InputListener() {
