@@ -24,18 +24,19 @@ import java.util.List;
 public class PokerGame extends ApplicationAdapter {
 	Stage stage;
 	boolean quit = false;
-	boolean sortHover = false;
+	boolean sortHover = false, foldHover = false;
 	int cardHeight = 70;
 	SpriteBatch batch;
-	Texture backgroundTexture;
-	Sprite background;
+	Texture backgroundTexture, menuTexture;
+	Sprite background, menu;
 	//long time = System.currentTimeMillis();
-	ImageButton img1, img2, img3, img4, img5, imgDeck, bet5, bet10, bet25, bet100, cardback1,
+	ImageButton img1, img2, img3, img4, img5, imgDeck, bet5, bet25, bet50, bet100, cardback1,
 	cardback2, cardback3, cardback4, cardback5, aicard1, aicard2, aicard3, aicard4, aicard5;
-	ImageButton btnComp, btnUser, btnSort;
+	ImageButton btnComp, btnUser, btnSort, btnFold;
 
 	Skin skin;
-	List<Card> deck, hand = new ArrayList<Card>(), aihand, swap;
+	List<Card> deck, hand = new ArrayList<Card>(), aihand;
+	boolean[] swap = new boolean[5];
 	
 	@Override
 	public void create () {
@@ -45,15 +46,36 @@ public class PokerGame extends ApplicationAdapter {
 		
 		// The stage will respond to input from Gdx (keyboard, mouse, touch, game controller)
 		Gdx.input.setInputProcessor(stage);
+		
+		// Add sprites
 		batch = new SpriteBatch();
 		backgroundTexture = new Texture("greenfelt.png");
 		background = new Sprite(backgroundTexture);
 		background.setSize(1100, 800);
 		background.setPosition(0, 0);
+		menuTexture = new Texture("Wood.png");
+		menu = new Sprite(menuTexture);
+		menu.setSize(800, 800);
+		menu.setPosition(800, 0);
+		// Add buttons
+		/*bet5 = new ImageButton(new SpriteDrawable(new Sprite(new Texture("5_chip.png"))));
+		bet25 = new ImageButton(new SpriteDrawable(new Sprite(new Texture("25_chip.png"))));
+		bet50 = new ImageButton(new SpriteDrawable(new Sprite(new Texture("50_chip.png"))));
+		bet100 = new ImageButton(new SpriteDrawable(new Sprite(new Texture("100_chip.png"))));*/
 		btnSort = new ImageButton(new SpriteDrawable(new Sprite(new Texture("SortCardsPlain.png"))));
+		btnFold = new ImageButton(new SpriteDrawable(new Sprite(new Texture("foldPlain.png"))));
+		/*bet5.setPosition(820, 250);
+		bet25.setPosition(870, 250);
+		bet50.setPosition(920, 250);
+		bet100.setPosition(970, 250);*/
 		btnSort.setPosition(265, 0);
+		btnFold.setPosition(830, 400);
+		/*stage.addActor(bet5);
+		stage.addActor(bet25);
+		stage.addActor(bet50);
+		stage.addActor(bet100);*/
 		stage.addActor(btnSort);
-		addBtnSortListener();
+		stage.addActor(btnFold);
 		
 		//stage.addActor(background);
 		deck = Card.deck();
@@ -97,10 +119,30 @@ public class PokerGame extends ApplicationAdapter {
 				stage.addActor(btnSort);
 				addBtnSortListener();
 			}
+		// Check mouse hover over btnFold
+		if(foldHover)
+			if(!btnFold.isOver()) {
+				foldHover = false;
+				btnFold.remove();
+				btnFold = new ImageButton(new SpriteDrawable(new Sprite(new Texture("foldPlain.png"))));
+				btnFold.setPosition(830, 400);
+				stage.addActor(btnFold);
+			}
+			else;
+		else
+			if(btnFold.isOver()) {
+				foldHover = true;
+				btnFold.remove();
+				btnFold = new ImageButton(new SpriteDrawable(new Sprite(new Texture("foldGlow.png"))));
+				btnFold.setPosition(830, 400);
+				stage.addActor(btnFold);
+				addBtnFoldListener();
+			}
 			
-		// Draw Sprites (background)
+		// Draw Sprites (background and menu)
 		batch.begin();
 		background.draw(batch);
+		menu.draw(batch);
 		batch.end();
 		// Draw Imagebuttons and other actors (foreground)
 		stage.act();
@@ -114,6 +156,7 @@ public class PokerGame extends ApplicationAdapter {
     public void dispose() {
 		// dispose of Spritebatch and all textures
         batch.dispose();
+        menuTexture.dispose();
         backgroundTexture.dispose();
     }
 	
@@ -147,6 +190,7 @@ public class PokerGame extends ApplicationAdapter {
 		stage.addActor(img4);
 		stage.addActor(img5);
 
+		addCardListeners();
 	}
 	
 	public void updateAiCards(){
@@ -371,19 +415,56 @@ public class PokerGame extends ApplicationAdapter {
 		return sortedHand;
 	}
 	
-	public void addBtnSortListener() {
-		btnSort.addListener(new InputListener() {
-			@Override
-			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
-				System.out.println("btnSort pressed");
-				hand = sortCards(hand);
-				aihand = sortCards(aihand);
-				updateCardImg();
-				updateAiCards();
+	public boolean swapCards() {
+		// Add animation to swap cards
+		
+		
+		/*System.out.print("Before:  ");
+		for(int i = 0; i < 5; i++) {
+			System.out.print((i+1) + "." + swap[i] + "   ");
+		}
+		System.out.println();*/
+		
+		// Take out cards from hand
+		if(swap[0]) {
+			deck.add(hand.get(0));
+			hand.remove(0);
+			hand.add(0, deck.get(0));
+			deck.remove(0);
+		}
+		if(swap[1]) {
+			deck.add(hand.get(1));
+			hand.remove(1);
+			hand.add(1, deck.get(0));
+			deck.remove(0);
+		}
+		if(swap[2]) {
+			deck.add(hand.get(2));
+			hand.remove(2);
+			hand.add(2, deck.get(0));
+			deck.remove(0);
+		}
+		if(swap[3]) {
+			deck.add(hand.get(3));
+			hand.remove(3);
+			hand.add(3, deck.get(0));
+			deck.remove(0);
+		}
+		if(swap[4]) {
+			deck.add(hand.get(4));
+			hand.remove(4);
+			hand.add(4, deck.get(0));
+			deck.remove(0);
+		}
+		java.util.Arrays.fill(swap, false);
+		updateCardImg();
+		
+		// return whether anything was swapped (true) or if nothing happened (false)
+		for(int i = 0; i < 5; i++) {
+			if(swap[i])
 				return true;
-				
-			}
-		});
+		}
+		return false;
 	}
 	
 	public void addCardListeners() {
@@ -391,8 +472,14 @@ public class PokerGame extends ApplicationAdapter {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("Card 1 pressed");
-				img1.setColor(Color.BLUE);
-				
+				if(img1.getY() == cardHeight) {
+					img1.addAction(moveTo(img1.getX(), cardHeight+20, (float)0.15));
+					swap[0] = true;
+				}
+				else {
+					img1.addAction(moveTo(img1.getX(), cardHeight, (float)0.15));
+					swap[0] = false;
+				}
 				return true;
 			}
 		});
@@ -400,7 +487,14 @@ public class PokerGame extends ApplicationAdapter {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("Card 2 pressed");
-				img2.addAction(moveTo((float)1, (float)1, (float)1));  // This is how to do an action
+				if(img2.getY() == cardHeight) {
+					img2.addAction(moveTo(img2.getX(), cardHeight+20, (float)0.15));
+					swap[1] = true;
+				}
+				else {
+					img2.addAction(moveTo(img2.getX(), cardHeight, (float)0.15));
+					swap[1] = false;
+				}
 				return true;
 			}
 		});
@@ -408,7 +502,15 @@ public class PokerGame extends ApplicationAdapter {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("Card 3 pressed");
-				img3.addAction(fadeOut(1));  // This is how to do an action
+				//img3.addAction(fadeOut(1));  // This is how to do an action
+				if(img3.getY() == cardHeight) {
+					img3.addAction(moveTo(img3.getX(), cardHeight+20, (float)0.15));
+					swap[2] = true;
+				}
+				else {
+					img3.addAction(moveTo(img3.getX(), cardHeight, (float)0.15));
+					swap[2] = false;
+				}
 				return true;
 			}
 		});
@@ -416,7 +518,14 @@ public class PokerGame extends ApplicationAdapter {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("Card 4 pressed");
-				img4.addAction(fadeOut(1));  // This is how to do an action
+				if(img4.getY() == cardHeight) {
+					img4.addAction(moveTo(img4.getX(), cardHeight+20, (float)0.15));
+					swap[3] = true;
+				}
+				else {
+					img4.addAction(moveTo(img4.getX(), cardHeight, (float)0.15));
+					swap[3] = false;
+				}
 				return true;
 			}
 		});
@@ -424,11 +533,44 @@ public class PokerGame extends ApplicationAdapter {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("Card 5 pressed");
-				img5.addAction(fadeOut(1));  // This is how to do an action
+				if(img5.getY() == cardHeight) {
+					img5.addAction(moveTo(img5.getX(), cardHeight+20, (float)0.15));
+					swap[4] = true;
+				}
+				else {
+					img5.addAction(moveTo(img5.getX(), cardHeight, (float)0.15));
+					swap[4] = false;
+				}
 				return true;
 			}
 		});
 	}
+
+	public void addBtnSortListener() {
+		btnSort.addListener(new InputListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
+				System.out.println("btnSort pressed");
+				hand = sortCards(hand);
+				//aihand = sortCards(aihand);
+				updateCardImg();
+				//updateAiCards();
+				return true;
+				
+			}
+		});
+	}
 	
+	public void addBtnFoldListener() { // for now, this acts as "swapBtn"
+		btnFold.addListener(new InputListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
+				System.out.println("btnFold pressed");
+				swapCards();
+				return true;
+				
+			}
+		});
+	}
 	
 }
