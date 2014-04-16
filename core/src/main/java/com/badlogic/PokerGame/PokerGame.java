@@ -43,7 +43,9 @@ public class PokerGame extends ApplicationAdapter {
 	ImageButton btnComp, btnUser, btnSort, btnCheck, btnFold, btnCall;
 
 	Skin skin;
-	List<Card> deck, hand = new ArrayList<Card>(), aihand, swap;
+	List<Card> deck, hand = new ArrayList<Card>(), aihand;
+	
+	boolean[] swap = new boolean[5];
 	
 	@Override
 	public void create () {
@@ -382,6 +384,8 @@ public class PokerGame extends ApplicationAdapter {
 		stage.addActor(img3);
 		stage.addActor(img4);
 		stage.addActor(img5);
+		
+		addCardListeners();
 
 	}
 	
@@ -498,6 +502,59 @@ public class PokerGame extends ApplicationAdapter {
 		return list;
 	}
 	
+	public boolean swapCards() {
+		// Add animation to swap cards
+		
+		
+		/*System.out.print("Before:  ");
+		for(int i = 0; i < 5; i++) {
+			System.out.print((i+1) + "." + swap[i] + "   ");
+		}
+		System.out.println();*/
+		
+		// Take out cards from hand
+		if(swap[0]) {
+			//img1.addAction();
+			deck.add(hand.get(0));
+			hand.remove(0);
+			hand.add(0, deck.get(0));
+			deck.remove(0);
+		}
+		if(swap[1]) {
+			deck.add(hand.get(1));
+			hand.remove(1);
+			hand.add(1, deck.get(0));
+			deck.remove(0);
+		}
+		if(swap[2]) {
+			deck.add(hand.get(2));
+			hand.remove(2);
+			hand.add(2, deck.get(0));
+			deck.remove(0);
+		}
+		if(swap[3]) {
+			deck.add(hand.get(3));
+			hand.remove(3);
+			hand.add(3, deck.get(0));
+			deck.remove(0);
+		}
+		if(swap[4]) {
+			deck.add(hand.get(4));
+			hand.remove(4);
+			hand.add(4, deck.get(0));
+			deck.remove(0);
+		}
+		java.util.Arrays.fill(swap, false);
+		updateCardImg();
+		
+		// return whether anything was swapped (true) or if nothing happened (false)
+		for(int i = 0; i < 5; i++) {
+			if(swap[i])
+				return true;
+		}
+		return false;
+	}
+	
 	public int checkHand(List<Card> paramHand) {
 		
 		List<Card> tempHand = new ArrayList<Card>();// = paramHand;
@@ -599,6 +656,7 @@ public class PokerGame extends ApplicationAdapter {
 		System.out.println("SORTED");
 		if(sortedHand.size() < 5)
 			System.out.println("ERROR: SIZE OF HAND = " + sortedHand.size());
+		java.util.Arrays.fill(swap, false);
 		return sortedHand;
 	}
 	
@@ -619,6 +677,7 @@ public class PokerGame extends ApplicationAdapter {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("btnFold pressed");
+				swapCards();
 				return true;
 				
 			}
@@ -647,8 +706,14 @@ public class PokerGame extends ApplicationAdapter {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("Card 1 pressed");
-				img1.setColor(Color.BLUE);
-				
+				if(img1.getY() == cardHeight) {
+					img1.addAction(moveTo(img1.getX(), cardHeight+20, (float)0.15));
+					swap[0] = true;
+				}
+				else {
+					img1.addAction(moveTo(img1.getX(), cardHeight, (float)0.15));
+					swap[0] = false;
+				}
 				return true;
 			}
 		});
@@ -656,7 +721,14 @@ public class PokerGame extends ApplicationAdapter {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("Card 2 pressed");
-				img2.addAction(moveTo((float)1, (float)1, (float)1));  // This is how to do an action
+				if(img2.getY() == cardHeight) {
+					img2.addAction(moveTo(img2.getX(), cardHeight+20, (float)0.15));
+					swap[1] = true;
+				}
+				else {
+					img2.addAction(moveTo(img2.getX(), cardHeight, (float)0.15));
+					swap[1] = false;
+				}
 				return true;
 			}
 		});
@@ -664,7 +736,15 @@ public class PokerGame extends ApplicationAdapter {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("Card 3 pressed");
-				img3.addAction(fadeOut(1));  // This is how to do an action
+				//img3.addAction(fadeOut(1));  // This is how to do an action
+				if(img3.getY() == cardHeight) {
+					img3.addAction(moveTo(img3.getX(), cardHeight+20, (float)0.15));
+					swap[2] = true;
+				}
+				else {
+					img3.addAction(moveTo(img3.getX(), cardHeight, (float)0.15));
+					swap[2] = false;
+				}
 				return true;
 			}
 		});
@@ -672,7 +752,14 @@ public class PokerGame extends ApplicationAdapter {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("Card 4 pressed");
-				img4.addAction(fadeOut(1));  // This is how to do an action
+				if(img4.getY() == cardHeight) {
+					img4.addAction(moveTo(img4.getX(), cardHeight+20, (float)0.15));
+					swap[3] = true;
+				}
+				else {
+					img4.addAction(moveTo(img4.getX(), cardHeight, (float)0.15));
+					swap[3] = false;
+				}
 				return true;
 			}
 		});
@@ -680,11 +767,17 @@ public class PokerGame extends ApplicationAdapter {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("Card 5 pressed");
-				img5.addAction(fadeOut(1));  // This is how to do an action
+				if(img5.getY() == cardHeight) {
+					img5.addAction(moveTo(img5.getX(), cardHeight+20, (float)0.15));
+					swap[4] = true;
+				}
+				else {
+					img5.addAction(moveTo(img5.getX(), cardHeight, (float)0.15));
+					swap[4] = false;
+				}
 				return true;
 			}
 		});
 	}
-	
 	
 }
