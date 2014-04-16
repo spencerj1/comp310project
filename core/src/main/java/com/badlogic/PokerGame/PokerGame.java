@@ -468,10 +468,13 @@ public class PokerGame extends ApplicationAdapter {
 				}
 				else {
 					System.out.println("Tie Game");
-					if(checkTieGameWinner(userScore)) // user wins
+					int winner = checkTieGameWinner(userScore);
+					if(winner == 1) // user wins
 						System.out.println("You Win!");
-					else
+					else if(winner == 2)
 						System.out.println("AI Wins :( ");
+					else
+						System.out.println("Both of you win! Cash is split.");
 				}
 					/*if(hand.get(4).intRank() > aihand.get(4).intRank())
 						System.out.println("You Win!");
@@ -570,8 +573,8 @@ public class PokerGame extends ApplicationAdapter {
 		tempHand = sortCards(tempHand);
 		if(tempHand.size() < 5)
 			System.out.println("ERROR2: SIZE OF HAND = " + tempHand.size());
-		int handStrength = 0;
-		String handname = "nothing";
+		int handStrength = 1;
+		String handName = "nothing";
 		
 		//Detect two of a kind
 		int kind = 0;
@@ -581,23 +584,23 @@ public class PokerGame extends ApplicationAdapter {
 					kind ++;
 		
 		if(kind == 6) {
-			handname = "Four of a Kind";
+			handName = "Four of a Kind";
 			handStrength = 8;
 		}
 		else if(kind == 4) {
-			handname = "Full House";
+			handName = "Full House";
 			handStrength = 7;
 		}
 		else if(kind == 3) {
-			handname = "Three of a Kind";
+			handName = "Three of a Kind";
 			handStrength = 4;
 		}
 		else if(kind == 2) {
-			handname = "Two Pairs";
+			handName = "Two Pairs";
 			handStrength = 3;
 		}
 		else if(kind == 1) {
-			handname = "Two of a Kind";
+			handName = "Two of a Kind";
 			handStrength = 2;
 		}
 		
@@ -606,7 +609,7 @@ public class PokerGame extends ApplicationAdapter {
 				&& (tempHand.get(1).intRank() == (tempHand.get(2).intRank() - 1))
 				&& (tempHand.get(2).intRank() == (tempHand.get(3).intRank() - 1))
 				&& (tempHand.get(3).intRank() == (tempHand.get(4).intRank() - 1))){
-				handname = "Straight";
+				handName = "Straight";
 				handStrength = 5;
 		}
 		
@@ -616,13 +619,13 @@ public class PokerGame extends ApplicationAdapter {
 				&& (tempHand.get(1).intSuit() == (tempHand.get(2).intSuit()))
 				&& (tempHand.get(2).intSuit() == (tempHand.get(3).intSuit()))
 				&& (tempHand.get(3).intSuit() == (tempHand.get(4).intSuit()))){
-				handname = "Flush";
+				handName = "Flush";
 				if(handStrength == 5) {
 					handStrength = 9;
-					handname = "Straight Flush";
+					handName = "Straight Flush";
 					if(tempHand.get(4).intRank() == 14) {
 						handStrength = 10;
-						handname = "Royal Flush";
+						handName = "Royal Flush";
 					}
 						
 				}
@@ -630,24 +633,37 @@ public class PokerGame extends ApplicationAdapter {
 					handStrength = 6;
 		}
 		
-		System.out.println("Hand = " + handname);
+		System.out.println("Hand = " + handName);
 		
 		return handStrength;
 	}
 	
-	public boolean checkTieGameWinner(int handType) {
-		int userHighCard = 0;
+	public int checkTieGameWinner(int handType) {
+		int winner = 0;  // initally set to tie
+		int userHighCard = 0, aiHighCard = 0;
 		if(handType == 2 || handType == 3 || handType == 4 || handType == 7 || handType == 8) {
 			// Checks highest card in kinds
-			for (int i = 0; i < 5; i++)
+			for (int i = 0; i < 5; i++) {
 				for(int j = i + 1; j < 5; j++)
 					if (hand.get(i).intRank() > userHighCard)
 						userHighCard = hand.get(i).intRank();
+				for(int j = i + 1; j < 5; j++)
+					if (aihand.get(i).intRank() > aiHighCard)
+						aiHighCard = aihand.get(i).intRank();
+			}
+		}
+		else if(handType == 0) {
+			// Checks highest card in both hands
+			userHighCard = hand.get(4).intRank();
+			aiHighCard = aihand.get(4).intRank();
 		}
 		
-
-		
-		return false;
+		// Find and return winner
+		if(userHighCard > aiHighCard)
+			winner = 1;
+		else if(userHighCard > aiHighCard)
+			winner = 2;
+		return winner;
 		
 	}
 	
