@@ -25,6 +25,7 @@ public class PokerGame extends ApplicationAdapter {
 	Stage stage;
 	boolean quit = false;
 	boolean sortHover = false;
+	boolean swapHover = false;
 	boolean checkHover = false;
 	boolean callHover = false;
 	boolean foldHover = false;
@@ -40,12 +41,12 @@ public class PokerGame extends ApplicationAdapter {
 	//long time = System.currentTimeMillis();
 	ImageButton img1, img2, img3, img4, img5, imgDeck, bet5, bet50, bet25, bet100, cardback1,
 	cardback2, cardback3, cardback4, cardback5, aicard1, aicard2, aicard3, aicard4, aicard5, woodbackground;
-	ImageButton btnComp, btnUser, btnSort, btnCheck, btnFold, btnCall;
+	ImageButton btnComp, btnUser, btnSort, btnSwap, btnCheck, btnFold, btnCall;
 
 	Skin skin;
 	List<Card> deck, hand = new ArrayList<Card>(), aihand;
 	
-	boolean[] swap = new boolean[5];
+	boolean[] swap = new boolean[5];  // keeps track of which cards you want swapped
 	
 	@Override
 	public void create () {
@@ -55,22 +56,17 @@ public class PokerGame extends ApplicationAdapter {
 		
 		// The stage will respond to input from Gdx (keyboard, mouse, touch, game controller)
 		Gdx.input.setInputProcessor(stage);
-		batch = new SpriteBatch();
-		backgroundTexture = new Texture("greenfelt.png");
-		background = new Sprite(backgroundTexture);
-		background.setSize(1100, 800);
-		background.setPosition(0, 0);
+		
+		// Create the user interface of the game
 		buildUI();
 		
-		
-		
-		//stage.addActor(background);
+		// Create a deck of cards to use
 		deck = Card.deck();
 		
 		// Draw the cards (should later be put in a buttonListener method)
 		deck = shuffle(deck);
 		hand = drawCards(deck);
-		/*hand.add(deck.get(9));
+		/*hand.add(deck.get(9)); // test with certain cards
 		hand.add(deck.get(10));
 		hand.add(deck.get(11));
 		hand.add(deck.get(12));
@@ -79,7 +75,6 @@ public class PokerGame extends ApplicationAdapter {
 		updateCardImg();
 		updateAiCards();
 		addCardListeners();
-		
 	}
 		
 	@Override
@@ -109,149 +104,177 @@ public class PokerGame extends ApplicationAdapter {
 	
 	public void checkHover(){
 		// Check mouse hover over btnSort
-				if(sortHover)
-					if(!btnSort.isOver()) {
-						sortHover = false;
-						btnSort.remove();
-						btnSort = new ImageButton(new SpriteDrawable(new Sprite(new Texture("SortCardsPlain.png"))));
-						btnSort.setSize(160, 80);
-						btnSort.setPosition(10, 0);
-						stage.addActor(btnSort);
-					}
-					else;
-				else
-					if(btnSort.isOver()) {
-						sortHover = true;
-						btnSort.remove();
-						btnSort = new ImageButton(new SpriteDrawable(new Sprite(new Texture("SortCardsGlow.png"))));
-						btnSort.setSize(160, 80);
-						btnSort.setPosition(10, 0);
-						stage.addActor(btnSort);
-						addBtnListeners();
-					}
-				
-				//Check mouse over btnCheck
-				if(checkHover)
-					if(!btnCheck.isOver()) {
-						checkHover = false;
-						btnCheck.remove();
-						btnCheck = new ImageButton(new SpriteDrawable(new Sprite(new Texture("checkPlain.png"))));
-						btnCheck.setPosition(815, 600);
-						stage.addActor(btnCheck);
-					}
-					else;
-				else
-					if(btnCheck.isOver()) {
-						checkHover = true;
-						btnCheck.remove();
-						btnCheck = new ImageButton(new SpriteDrawable(new Sprite(new Texture("checkGlow.png"))));
-						btnCheck.setPosition(815, 600);
-						stage.addActor(btnCheck);
-						addBtnListeners();
-					}
-				
-				//Check mouse over btnCall
-				if(callHover)
-					if(!btnCall.isOver()) {
-						callHover = false;
-						btnCall.remove();
-						btnCall = new ImageButton(new SpriteDrawable(new Sprite(new Texture("callPlain.png"))));
-						btnCall.setPosition(828, 700);
-						stage.addActor(btnCall);
-					}
-					else;
-				else
-					if(btnCall.isOver()) {
-						callHover = true;
-						btnCall.remove();
-						btnCall = new ImageButton(new SpriteDrawable(new Sprite(new Texture("callGlow.png"))));
-						btnCall.setPosition(828, 700);
-						stage.addActor(btnCall);
-						addBtnListeners();
-					}
-				
-				//Check mouse over btnFold
-				if(foldHover)
-					if(!btnFold.isOver()) {
-						foldHover = false;
-						btnFold.remove();
-						btnFold = new ImageButton(new SpriteDrawable(new Sprite(new Texture("foldPlain.png"))));
-						btnFold.setPosition(830, 500);
-						stage.addActor(btnFold);
-					}
-					else;
-				else
-					if(btnFold.isOver()) {
-						foldHover = true;
-						btnFold.remove();
-						btnFold = new ImageButton(new SpriteDrawable(new Sprite(new Texture("foldGlow.png"))));
-						btnFold.setPosition(830, 500);
-						stage.addActor(btnFold);
-						addBtnListeners();
-					}
-				
-				//Check mouse is over bet5
-				if(Hover5)
-					if(!bet5.isOver()) {
-						Hover5 = false;
-						bet5.setSize(110, 110);
-						bet5.setPosition(845, 190);
-					}
-					else;
-				else
-					if(bet5.isOver()) {
-						Hover5 = true;
-						bet5.setSize(120, 120);
-						bet5.setPosition(840, 185);
-					}
-				
-				//Check mouse is over bet25
-				if(Hover25)
-					if(!bet25.isOver()) {
-						Hover25 = false;
-						bet25.setSize(110, 110);
-						bet25.setPosition(845, 70);
-					}
-					else;
-				else
-					if(bet25.isOver()) {
-						Hover25 = true;
-						bet25.setSize(120, 120);
-						bet25.setPosition(840, 65);
-					}
-				
-				//Check mouse is over bet50
-				if(Hover50)
-					if(!bet50.isOver()) {
-						Hover50 = false;
-						bet50.setSize(110, 110);
-						bet50.setPosition(970, 190);
-					}
-					else;
-				else
-					if(bet50.isOver()) {
-						Hover50 = true;
-						bet50.setSize(120, 120);
-						bet50.setPosition(965, 185);
-					}
-				
-				//Check mouse is over bet100
-				if(Hover100)
-					if(!bet100.isOver()) {
-						Hover100 = false;
-						bet100.setSize(110, 110);
-						bet100.setPosition(970, 70);
-					}
-					else;
-				else
-					if(bet100.isOver()) {
-						Hover100 = true;
-						bet100.setSize(120, 120);
-						bet100.setPosition(965, 65);
-					}
-	}
-	
+		if(sortHover)
+			if(!btnSort.isOver()) {
+				sortHover = false;
+				btnSort.remove();
+				btnSort = new ImageButton(new SpriteDrawable(new Sprite(new Texture("sortPlain.png"))));
+				btnSort.setSize(160, 80);
+				btnSort.setPosition(10, 0);
+				stage.addActor(btnSort);
+			}
+			else;
+		else
+			if(btnSort.isOver()) {
+				sortHover = true;
+				btnSort.remove();
+				btnSort = new ImageButton(new SpriteDrawable(new Sprite(new Texture("sortGlow.png"))));
+				btnSort.setSize(160, 80);
+				btnSort.setPosition(10, 0);
+				stage.addActor(btnSort);
+				addHoverBtnListeners();
+			}
+		
+		// Check mouse hover over btnSwap
+		if(swapHover)
+			if(!btnSwap.isOver()) {
+				swapHover = false;
+				btnSwap.remove();
+				btnSwap = new ImageButton(new SpriteDrawable(new Sprite(new Texture("swapPlain.png"))));
+				btnSwap.setSize(260, 130);
+				btnSwap.setPosition(250, -30);
+				stage.addActor(btnSwap);
+			}
+			else;
+		else
+			if(btnSwap.isOver()) {
+				swapHover = true;
+				btnSwap.remove();
+				btnSwap = new ImageButton(new SpriteDrawable(new Sprite(new Texture("swapGlow.png"))));
+				btnSwap.setSize(260, 130);
+				btnSwap.setPosition(250, -30);
+				stage.addActor(btnSwap);
+				addHoverBtnListeners();
+			}
+		
+		//Check mouse over btnCheck
+		if(checkHover)
+			if(!btnCheck.isOver()) {
+				checkHover = false;
+				btnCheck.remove();
+				btnCheck = new ImageButton(new SpriteDrawable(new Sprite(new Texture("checkPlain.png"))));
+				btnCheck.setPosition(815, 600);
+				stage.addActor(btnCheck);
+			}
+			else;
+		else
+			if(btnCheck.isOver()) {
+				checkHover = true;
+				btnCheck.remove();
+				btnCheck = new ImageButton(new SpriteDrawable(new Sprite(new Texture("checkGlow.png"))));
+				btnCheck.setPosition(815, 600);
+				stage.addActor(btnCheck);
+				addHoverBtnListeners();
+			}
+		
+		//Check mouse over btnCall
+		if(callHover)
+			if(!btnCall.isOver()) {
+				callHover = false;
+				btnCall.remove();
+				btnCall = new ImageButton(new SpriteDrawable(new Sprite(new Texture("callPlain.png"))));
+				btnCall.setPosition(828, 700);
+				stage.addActor(btnCall);
+			}
+			else;
+		else
+			if(btnCall.isOver()) {
+				callHover = true;
+				btnCall.remove();
+				btnCall = new ImageButton(new SpriteDrawable(new Sprite(new Texture("callGlow.png"))));
+				btnCall.setPosition(828, 700);
+				stage.addActor(btnCall);
+				addHoverBtnListeners();
+			}
+		
+		//Check mouse over btnFold
+		if(foldHover)
+			if(!btnFold.isOver()) {
+				foldHover = false;
+				btnFold.remove();
+				btnFold = new ImageButton(new SpriteDrawable(new Sprite(new Texture("foldPlain.png"))));
+				btnFold.setPosition(830, 500);
+				stage.addActor(btnFold);
+			}
+			else;
+		else
+			if(btnFold.isOver()) {
+				foldHover = true;
+				btnFold.remove();
+				btnFold = new ImageButton(new SpriteDrawable(new Sprite(new Texture("foldGlow.png"))));
+				btnFold.setPosition(830, 500);
+				stage.addActor(btnFold);
+				addHoverBtnListeners();
+			}
+		
+		//Check mouse is over bet5
+		if(Hover5)
+			if(!bet5.isOver()) {
+				Hover5 = false;
+				bet5.setSize(110, 110);
+				bet5.setPosition(845, 190);
+			}
+			else;
+		else
+			if(bet5.isOver()) {
+				Hover5 = true;
+				bet5.setSize(120, 120);
+				bet5.setPosition(840, 185);
+			}
+		
+		//Check mouse is over bet25
+		if(Hover25)
+			if(!bet25.isOver()) {
+				Hover25 = false;
+				bet25.setSize(110, 110);
+				bet25.setPosition(845, 70);
+			}
+			else;
+		else
+			if(bet25.isOver()) {
+				Hover25 = true;
+				bet25.setSize(120, 120);
+				bet25.setPosition(840, 65);
+			}
+		
+		//Check mouse is over bet50
+		if(Hover50)
+			if(!bet50.isOver()) {
+				Hover50 = false;
+				bet50.setSize(110, 110);
+				bet50.setPosition(970, 190);
+			}
+			else;
+		else
+			if(bet50.isOver()) {
+				Hover50 = true;
+				bet50.setSize(120, 120);
+				bet50.setPosition(965, 185);
+			}
+		
+		//Check mouse is over bet100
+		if(Hover100)
+			if(!bet100.isOver()) {
+				Hover100 = false;
+				bet100.setSize(110, 110);
+				bet100.setPosition(970, 70);
+			}
+			else;
+		else
+			if(bet100.isOver()) {
+				Hover100 = true;
+				bet100.setSize(120, 120);
+				bet100.setPosition(965, 65);
+			}
+}
+
 	public void buildUI(){
+		batch = new SpriteBatch();
+		backgroundTexture = new Texture("greenfelt.png");
+		background = new Sprite(backgroundTexture);
+		background.setSize(1100, 800);
+		background.setPosition(0, 0);		
+		
 		woodbackground = new ImageButton(new SpriteDrawable(new Sprite(new Texture("wood_and_border.png"))));
 		woodbackground.setPosition(810, 0);
 		stage.addActor(woodbackground);
@@ -267,6 +290,16 @@ public class PokerGame extends ApplicationAdapter {
 		btnCall = new ImageButton(new SpriteDrawable(new Sprite(new Texture("callPlain.png"))));
 		btnCall.setPosition(828, 700);
 		stage.addActor(btnCall);
+		
+		btnSort = new ImageButton(new SpriteDrawable(new Sprite(new Texture("sortPlain.png"))));
+		btnSort.setSize(160, 80);
+		btnSort.setPosition(10, 0);
+		stage.addActor(btnSort);
+		
+		btnSwap = new ImageButton(new SpriteDrawable(new Sprite(new Texture("swapPlain.png"))));
+		btnSwap.setSize(260, 130);
+		btnSwap.setPosition(250, -30);
+		stage.addActor(btnSwap);
 		
 		bet5 = new ImageButton(new SpriteDrawable(new Sprite(new Texture("5_chip.png"))));
 		bet5.setPosition(845, 190);
@@ -288,13 +321,10 @@ public class PokerGame extends ApplicationAdapter {
 		bet100.setSize(110, 110);
 		stage.addActor(bet100);
 		
+		addHoverBtnListeners();
 		
-		btnSort = new ImageButton(new SpriteDrawable(new Sprite(new Texture("SortCardsPlain.png"))));
-		btnSort.setSize(160, 80);
-		btnSort.setPosition(10, 0);
-		stage.addActor(btnSort);
-		addBtnListeners();
 		
+		// Add listeners
 		bet5.addListener(new InputListener() {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
@@ -467,12 +497,12 @@ public class PokerGame extends ApplicationAdapter {
 					System.out.println("AI Wins :( ");
 				}
 				else {
-					System.out.println("Tie Game");
+					System.out.println("Tie Hand");
 					int winner = checkTieGameWinner(userScore);
 					if(winner == 1) // user wins
-						System.out.println("You Win!");
+						System.out.println("You Win by high card!");
 					else if(winner == 2)
-						System.out.println("AI Wins :( ");
+						System.out.println("AI Wins by high card. :( ");
 					else
 						System.out.println("Both of you win! Cash is split.");
 				}
@@ -616,16 +646,16 @@ public class PokerGame extends ApplicationAdapter {
 		
 		//Detect flush
 		if ((tempHand.get(0).intSuit() == (tempHand.get(1).intSuit()))
-				&& (tempHand.get(1).intSuit() == (tempHand.get(2).intSuit()))
-				&& (tempHand.get(2).intSuit() == (tempHand.get(3).intSuit()))
-				&& (tempHand.get(3).intSuit() == (tempHand.get(4).intSuit()))){
+		 && (tempHand.get(1).intSuit() == (tempHand.get(2).intSuit()))
+		 && (tempHand.get(2).intSuit() == (tempHand.get(3).intSuit()))
+		 && (tempHand.get(3).intSuit() == (tempHand.get(4).intSuit()))){
 				handName = "Flush";
 				if(handStrength == 5) {
-					handStrength = 9;
 					handName = "Straight Flush";
+					handStrength = 9;
 					if(tempHand.get(4).intRank() == 14) {
-						handStrength = 10;
 						handName = "Royal Flush";
+						handStrength = 10;
 					}
 						
 				}
@@ -645,14 +675,16 @@ public class PokerGame extends ApplicationAdapter {
 			// Checks highest card in kinds
 			for (int i = 0; i < 5; i++) {
 				for(int j = i + 1; j < 5; j++)
-					if (hand.get(i).intRank() > userHighCard)
-						userHighCard = hand.get(i).intRank();
+					if (hand.get(i).intRank() == hand.get(j).intRank())
+						if(hand.get(i).intRank() > userHighCard)
+							userHighCard = hand.get(i).intRank();
 				for(int j = i + 1; j < 5; j++)
-					if (aihand.get(i).intRank() > aiHighCard)
+					if (aihand.get(i).intRank() == aihand.get(j).intRank())
+							if(aihand.get(i).intRank() > aiHighCard)
 						aiHighCard = aihand.get(i).intRank();
 			}
 		}
-		else if(handType == 0) {
+		else if(handType < 2 || handType == 5 || handType == 6 || handType > 8) {
 			// Checks highest card in both hands
 			userHighCard = hand.get(4).intRank();
 			aiHighCard = aihand.get(4).intRank();
@@ -661,10 +693,10 @@ public class PokerGame extends ApplicationAdapter {
 		// Find and return winner
 		if(userHighCard > aiHighCard)
 			winner = 1;
-		else if(userHighCard > aiHighCard)
+		else if(userHighCard < aiHighCard)
 			winner = 2;
+		System.out.println();
 		return winner;
-		
 	}
 	
 	public List<Card> sortCards(List<Card> hand) {
@@ -698,7 +730,7 @@ public class PokerGame extends ApplicationAdapter {
 		return sortedHand;
 	}
 	
-	public void addBtnListeners() {
+	public void addHoverBtnListeners() {
 		btnSort.addListener(new InputListener() {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
@@ -707,17 +739,24 @@ public class PokerGame extends ApplicationAdapter {
 				aihand = sortCards(aihand);
 				updateCardImg();
 				updateAiCards();
-				return true;
-				
+				return true;	
+			}
+		});
+		btnSwap.addListener(new InputListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
+				System.out.println("btnSort pressed");
+				swapCards();
+				updateCardImg();
+				return true;	
 			}
 		});
 		btnFold.addListener(new InputListener() {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("btnFold pressed");
-				swapCards();
-				return true;
 				
+				return true;
 			}
 		});
 		btnCheck.addListener(new InputListener() {
@@ -725,7 +764,6 @@ public class PokerGame extends ApplicationAdapter {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("btnCheck pressed");
 				return true;
-				
 			}
 		});
 		btnCall.addListener(new InputListener() {
@@ -733,7 +771,6 @@ public class PokerGame extends ApplicationAdapter {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("btnCall pressed");
 				return true;
-				
 			}
 		});
 		
