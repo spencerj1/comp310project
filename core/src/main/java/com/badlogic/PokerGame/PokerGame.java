@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -41,8 +42,12 @@ public class PokerGame extends ApplicationAdapter {
 	ImageButton img1, img2, img3, img4, img5, imgDeck, bet5, bet50, bet25, bet100, cardback1,
 	cardback2, cardback3, cardback4, cardback5, aicard1, aicard2, aicard3, aicard4, aicard5, woodbackground;
 	ImageButton btnComp, btnUser, btnSort, btnCheck, btnFold, btnCall;
-
+	String balanceText;
+	BitmapFont font;
+	
 	Skin skin;
+	Label balanceLabel;
+	
 	List<Card> deck, hand = new ArrayList<Card>(), aihand;
 	
 	boolean[] swap = new boolean[5];
@@ -50,7 +55,7 @@ public class PokerGame extends ApplicationAdapter {
 	@Override
 	public void create () {
 		
-		//skin = new Skin(Gdx.files.internal("data/uiskin.json"));
+		skin = new Skin(Gdx.files.internal("skin1.json"));
 		stage = new Stage();
 		
 		// The stage will respond to input from Gdx (keyboard, mouse, touch, game controller)
@@ -62,7 +67,15 @@ public class PokerGame extends ApplicationAdapter {
 		background.setPosition(0, 0);
 		buildUI();
 		
+		balanceLabel = new Label("$500", skin);
+		balanceLabel.setPosition(300, 400);
+		balanceLabel.setText("$1000");
 		
+		stage.addActor(balanceLabel);
+		
+		
+		
+	
 		
 		//stage.addActor(background);
 		deck = Card.deck();
@@ -80,6 +93,7 @@ public class PokerGame extends ApplicationAdapter {
 		updateAiCards();
 		addCardListeners();
 		
+		
 	}
 		
 	@Override
@@ -92,9 +106,11 @@ public class PokerGame extends ApplicationAdapter {
 		batch.begin();
 		background.draw(batch);
 		batch.end();
-		// Draw Imagebuttons and other actors (foreground)
 		stage.act();
 		stage.draw();
+		
+		// Draw Imagebuttons and other actors (foreground)
+		
 		
 		if(quit)
 			Gdx.app.exit();

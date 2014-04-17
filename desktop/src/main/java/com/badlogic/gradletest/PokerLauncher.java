@@ -10,5 +10,6 @@ public class PokerLauncher {
 		config.height = 800;
 		config.width = 1100;
 		new LwjglApplication(new PokerGame(), config);
+		
 	}
 }
