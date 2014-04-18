@@ -1,0 +1,17 @@
+{  
+     com.badlogic.gdx.graphics.g2d.BitmapFont: {  
+      NormalFont2: { file: NormalFont2.fnt },   
+     },  
+     com.badlogic.gdx.graphics.Color: {  
+      red: { a: 1, b: 0, g: 0, r: 1 },  
+      green: { a: 1, b: 0, g: 1, r: 0 },  
+      blue: { a: 1, b: 1, g: 0, r: 0 },  
+      white: { hex: "FFFFFF" },  
+      black: { hex: "000000" }, 
+      darkblue: { hex: "0409B0" }
+     },  
+     com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {  
+      default: { font: NormalFont2, fontColor: darkblue },  
+      normal-text: { font: NormalFont2, fontColor: white },   
+     }  
+   }  

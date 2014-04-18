@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -29,6 +30,7 @@ public class PokerGame extends ApplicationAdapter {
 	boolean checkHover = false;
 	boolean callHover = false;
 	boolean foldHover = false;
+	boolean bidHover = false;
 	boolean Hover5 = false;
 	boolean Hover25 = false;
 	boolean Hover50 = false;
@@ -41,9 +43,15 @@ public class PokerGame extends ApplicationAdapter {
 	//long time = System.currentTimeMillis();
 	ImageButton img1, img2, img3, img4, img5, imgDeck, bet5, bet50, bet25, bet100, cardback1,
 	cardback2, cardback3, cardback4, cardback5, aicard1, aicard2, aicard3, aicard4, aicard5, woodbackground;
-	ImageButton btnComp, btnUser, btnSort, btnSwap, btnCheck, btnFold, btnCall;
-
-	Skin skin;
+	ImageButton btnComp, btnUser, btnSort, btnSwap, btnCheck, btnFold, btnCall, btnPlaceBid;
+	
+	int yourBalance = 500; 
+	int userBid = 0;
+	int computerBid = 0;
+	
+	Skin skin, skin2, skin3;
+	Label balanceLabel, yourBid, compBid, total;
+	
 	List<Card> deck, hand = new ArrayList<Card>(), aihand;
 	
 	boolean[] swap = new boolean[5];  // keeps track of which cards you want swapped
@@ -51,14 +59,18 @@ public class PokerGame extends ApplicationAdapter {
 	@Override
 	public void create () {
 		
-		//skin = new Skin(Gdx.files.internal("data/uiskin.json"));
+		skin = new Skin(Gdx.files.internal("skin1.json"));
+		skin2 = new Skin(Gdx.files.internal("skin2.json"));
+		skin3 = new Skin(Gdx.files.internal("skin3.json"));
 		stage = new Stage();
 		
 		// The stage will respond to input from Gdx (keyboard, mouse, touch, game controller)
 		Gdx.input.setInputProcessor(stage);
-		
+	
 		// Create the user interface of the game
 		buildUI();
+	
+		updateText();
 		
 		// Create a deck of cards to use
 		deck = Card.deck();
@@ -75,6 +87,7 @@ public class PokerGame extends ApplicationAdapter {
 		updateCardImg();
 		updateAiCards();
 		addCardListeners();
+		
 	}
 		
 	@Override
@@ -82,16 +95,18 @@ public class PokerGame extends ApplicationAdapter {
 		Gdx.gl.glClearColor(0, (float)0.5, 0, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		checkHover();
-		
+				
 		// Draw Sprites (background)
 		batch.begin();
 		background.draw(batch);
 		menu.draw(batch);
 		balance.draw(batch);
 		batch.end();
-		// Draw Imagebuttons and other actors (foreground)
 		stage.act();
 		stage.draw();
+		
+		// Draw Imagebuttons and other actors (foreground)
+		
 		
 		if(quit)
 			Gdx.app.exit();
@@ -155,7 +170,8 @@ public class PokerGame extends ApplicationAdapter {
 				checkHover = false;
 				btnCheck.remove();
 				btnCheck = new ImageButton(new SpriteDrawable(new Sprite(new Texture("checkPlain.png"))));
-				btnCheck.setPosition(815, 600);
+				btnCheck.setPosition(910, 700);
+				btnCheck.setSize(200, 50);
 				stage.addActor(btnCheck);
 			}
 			else;
@@ -164,7 +180,8 @@ public class PokerGame extends ApplicationAdapter {
 				checkHover = true;
 				btnCheck.remove();
 				btnCheck = new ImageButton(new SpriteDrawable(new Sprite(new Texture("checkGlow.png"))));
-				btnCheck.setPosition(815, 600);
+				btnCheck.setPosition(910, 700);
+				btnCheck.setSize(200, 50);
 				stage.addActor(btnCheck);
 				addHoverBtnListeners();
 			}
@@ -175,7 +192,8 @@ public class PokerGame extends ApplicationAdapter {
 				callHover = false;
 				btnCall.remove();
 				btnCall = new ImageButton(new SpriteDrawable(new Sprite(new Texture("callPlain.png"))));
-				btnCall.setPosition(828, 700);
+				btnCall.setPosition(800, 700);
+				btnCall.setSize(200, 50);
 				stage.addActor(btnCall);
 			}
 			else;
@@ -184,7 +202,8 @@ public class PokerGame extends ApplicationAdapter {
 				callHover = true;
 				btnCall.remove();
 				btnCall = new ImageButton(new SpriteDrawable(new Sprite(new Texture("callGlow.png"))));
-				btnCall.setPosition(828, 700);
+				btnCall.setPosition(800, 700);
+				btnCall.setSize(200, 50);
 				stage.addActor(btnCall);
 				addHoverBtnListeners();
 			}
@@ -195,7 +214,7 @@ public class PokerGame extends ApplicationAdapter {
 				foldHover = false;
 				btnFold.remove();
 				btnFold = new ImageButton(new SpriteDrawable(new Sprite(new Texture("foldPlain.png"))));
-				btnFold.setPosition(830, 500);
+				btnFold.setPosition(830, 610);
 				stage.addActor(btnFold);
 			}
 			else;
@@ -204,8 +223,28 @@ public class PokerGame extends ApplicationAdapter {
 				foldHover = true;
 				btnFold.remove();
 				btnFold = new ImageButton(new SpriteDrawable(new Sprite(new Texture("foldGlow.png"))));
-				btnFold.setPosition(830, 500);
+				btnFold.setPosition(830, 610);
 				stage.addActor(btnFold);
+				addHoverBtnListeners();
+			}
+		
+		//Check mouse over btnPlaceBid
+		if(bidHover)
+			if(!btnPlaceBid.isOver()) {
+				bidHover = false;
+				btnPlaceBid.remove();
+				btnPlaceBid = new ImageButton(new SpriteDrawable(new Sprite(new Texture("placebidPlain.png"))));
+				btnPlaceBid.setPosition(830, 520);
+				stage.addActor(btnPlaceBid);
+			}
+			else;
+		else
+			if(btnPlaceBid.isOver()) {
+				bidHover = true;
+				btnPlaceBid.remove();
+				btnPlaceBid = new ImageButton(new SpriteDrawable(new Sprite(new Texture("placebidGlow.png"))));
+				btnPlaceBid.setPosition(830, 520);
+				stage.addActor(btnPlaceBid);
 				addHoverBtnListeners();
 			}
 		
@@ -287,17 +326,22 @@ public class PokerGame extends ApplicationAdapter {
 		/*woodbackground = new ImageButton(new SpriteDrawable(new Sprite(new Texture("wood_and_border.png"))));
 		woodbackground.setPosition(810, 0);
 		stage.addActor(woodbackground);*/
+		btnPlaceBid = new ImageButton(new SpriteDrawable(new Sprite(new Texture("placebidPlain.png"))));
+		btnPlaceBid.setPosition(830, 520);
+		stage.addActor(btnPlaceBid);
 		
 		btnFold = new ImageButton(new SpriteDrawable(new Sprite(new Texture("foldPlain.png"))));
-		btnFold.setPosition(830, 500);
+		btnFold.setPosition(830, 610);
 		stage.addActor(btnFold);
 		
 		btnCheck = new ImageButton(new SpriteDrawable(new Sprite(new Texture("checkPlain.png"))));
-		btnCheck.setPosition(815, 600);
+		btnCheck.setPosition(910, 700);
+		btnCheck.setSize(200, 50);
 		stage.addActor(btnCheck);
 		
 		btnCall = new ImageButton(new SpriteDrawable(new Sprite(new Texture("callPlain.png"))));
-		btnCall.setPosition(828, 700);
+		btnCall.setPosition(800, 700);
+		btnCall.setSize(200, 50);
 		stage.addActor(btnCall);
 		
 		btnSort = new ImageButton(new SpriteDrawable(new Sprite(new Texture("sortPlain.png"))));
@@ -340,6 +384,9 @@ public class PokerGame extends ApplicationAdapter {
 				System.out.println("bet5 pressed");
 				bet5.setSize(100, 100);
 				bet5.setPosition(850, 165);
+				yourBalance = yourBalance - 5;
+				userBid = userBid + 5;
+				updateText();
 				return true;
 			}
 			public void touchUp(InputEvent event, float x, float y, int pointer, int mouseButton) {
@@ -395,7 +442,26 @@ public class PokerGame extends ApplicationAdapter {
 			
 		});
 		
+		balanceLabel = new Label(" ", skin);
+		balanceLabel.setPosition(910, 360);
+		balanceLabel.setFontScale((float) 1.2);
+		stage.addActor(balanceLabel);
+		
+		yourBid = new Label(" ", skin2);
+		yourBid.setPosition(40, 330);
+		stage.addActor(yourBid);
+		
+		compBid = new Label(" ", skin2);
+		compBid.setPosition(40, 450);
+		stage.addActor(compBid);
+		
+		total = new Label(" ", skin3);
+		total.setPosition(40, 390);
+		total.setFontScale((float) 1.5);
+		stage.addActor(total);
+		
 	}
+	
 	
 	public void updateCardImg() {
 		// Delete existing images
@@ -782,6 +848,13 @@ public class PokerGame extends ApplicationAdapter {
 				return true;
 			}
 		});
+		btnPlaceBid.addListener(new InputListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
+				System.out.println("btnPlaceBid pressed");
+				return true;
+			}
+		});
 		
 	}
 	
@@ -863,4 +936,16 @@ public class PokerGame extends ApplicationAdapter {
 			}
 		});
 	}
+	
+	public void updateText(){
+		balanceLabel.setText("$" + yourBalance);
+		yourBid.setText("Your Bid = $" + userBid);
+		compBid.setText("Computer Bid = $" + computerBid);
+		total.setText("Total = $" + (userBid + computerBid));
+	}
+	
+	public void userTurn(int turnNum){
+	}
+	
+	
 }
