@@ -27,6 +27,7 @@ import java.util.Random;
 public class PokerGame extends ApplicationAdapter {
 	Stage stage;
 	boolean quit = false;
+	boolean gameStart = true;
 	boolean animateUserCards = false;
 	boolean animateAICards = false;
 	boolean sortHover = false;
@@ -76,7 +77,6 @@ public class PokerGame extends ApplicationAdapter {
 	
 		// Create the user interface of the game
 		buildUI();
-		//updateText();
 		
 		// Create a deck of cards to use
 		deck = Card.deck();
@@ -476,6 +476,25 @@ public class PokerGame extends ApplicationAdapter {
 	}
 	
 	public void cardAnimationSetup() {
+		if(gameStart) {
+			img1.addAction(fadeOut(0));
+			img2.addAction(fadeOut(0));
+			img3.addAction(fadeOut(0));
+			img4.addAction(fadeOut(0));
+			img5.addAction(fadeOut(0));
+			aicard1.addAction(fadeOut(0));
+			aicard2.addAction(fadeOut(0));
+			aicard3.addAction(fadeOut(0));
+			aicard4.addAction(fadeOut(0));
+			aicard5.addAction(fadeOut(0));
+			cardback1.addAction(fadeOut(0));
+			cardback2.addAction(fadeOut(0));
+			cardback3.addAction(fadeOut(0));
+			cardback4.addAction(fadeOut(0));
+			cardback5.addAction(fadeOut(0));
+			gameStart = false;
+		}
+		
 		img1.addAction(moveTo(-120, cardHeight,1));
 		img2.addAction(moveTo(-120, cardHeight,1));
 		img3.addAction(moveTo(-120, cardHeight,1));
@@ -498,8 +517,24 @@ public class PokerGame extends ApplicationAdapter {
 	
 	public void animate() {  // called in render()
 		if(animateUserCards) {
-			if(System.currentTimeMillis() - timer > 1000)
+			if(System.currentTimeMillis() - timer > 1000) {
+				img1.addAction(fadeIn(0));
+				img2.addAction(fadeIn(0));
+				img3.addAction(fadeIn(0));
+				img4.addAction(fadeIn(0));
+				img5.addAction(fadeIn(0));
+				aicard1.addAction(fadeIn(0));
+				aicard2.addAction(fadeIn(0));
+				aicard3.addAction(fadeIn(0));
+				aicard4.addAction(fadeIn(0));
+				aicard5.addAction(fadeIn(0));
+				cardback1.addAction(fadeIn(0));
+				cardback2.addAction(fadeIn(0));
+				cardback3.addAction(fadeIn(0));
+				cardback4.addAction(fadeIn(0));
+				cardback5.addAction(fadeIn(0));
 				img5.addAction(moveTo(630, cardHeight, (float)0.5));
+			}
 			if(System.currentTimeMillis() - timer > 1500)
 				img4.addAction(moveTo(480, cardHeight, (float)0.6));
 			if(System.currentTimeMillis() - timer > 2000)
@@ -562,10 +597,6 @@ public class PokerGame extends ApplicationAdapter {
 		img5.setSize(120, 240);
 		img5.setPosition(630, cardHeight);
 		
-		if(animateUserCards) {
-			
-		}
-		
 		
 		
 		stage.addActor(img1);
@@ -575,9 +606,6 @@ public class PokerGame extends ApplicationAdapter {
 		stage.addActor(img5);
 		
 		addCardListeners();
-		
-		
-
 	}
 	
 	public void updateAiCards(){
@@ -747,8 +775,10 @@ public class PokerGame extends ApplicationAdapter {
 			round++;
 			roundNum.setText("Round  " + round + "/3");
 		}
-		else
+		else { // end of rounds, produce win
+			
 			newHand();
+		}
 	}
 	
 	public boolean placeBid(int amount) {
@@ -912,11 +942,10 @@ public class PokerGame extends ApplicationAdapter {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("btnSort pressed");
 				if(enableSwap == true){
-				swapCards();
-				updateCardImg();
-				userBid = 0;
-				computerBid = 0;
-				updateText();
+					swapCards();
+					updateCardImg();
+					userBid = 0;
+					computerBid = 0;
 				}
 				enableSwap = false;
 				return true;
@@ -938,7 +967,6 @@ public class PokerGame extends ApplicationAdapter {
 				System.out.println("btnCheck pressed");
 				if (computerBid == 0 ){
 					computerBid = AiBet();
-					updateText();
 					if(computerBid == 0){
 						enableSwap = true;
 					}
@@ -953,7 +981,6 @@ public class PokerGame extends ApplicationAdapter {
 				yourBalance = yourBalance - (computerBid - userBid);
 				userBid = computerBid;
 				intTotal = userBid + computerBid;
-				updateText();
 				enableSwap = true;
 				return true;
 			}
@@ -964,7 +991,6 @@ public class PokerGame extends ApplicationAdapter {
 				System.out.println("btnPlaceBid pressed");
 				computerBid = AiBet();
 				intTotal = userBid + computerBid;
-				updateText();
 				if (computerBid == userBid){
 					enableSwap = true;
 				}
