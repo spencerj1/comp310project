@@ -37,8 +37,8 @@ public class PokerGame extends ApplicationAdapter {
 	
 	int cardHeight = 70;
 	SpriteBatch batch;
-	Texture backgroundTexture;
-	Sprite background;
+	Texture backgroundTexture, menuTexture, balanceTexture;
+	Sprite background, menu, balance;
 	//long time = System.currentTimeMillis();
 	ImageButton img1, img2, img3, img4, img5, imgDeck, bet5, bet50, bet25, bet100, cardback1,
 	cardback2, cardback3, cardback4, cardback5, aicard1, aicard2, aicard3, aicard4, aicard5, woodbackground;
@@ -100,6 +100,8 @@ public class PokerGame extends ApplicationAdapter {
 		// Draw Sprites (background)
 		batch.begin();
 		background.draw(batch);
+		menu.draw(batch);
+		balance.draw(batch);
 		batch.end();
 		stage.act();
 		stage.draw();
@@ -228,14 +230,14 @@ public class PokerGame extends ApplicationAdapter {
 			if(!bet5.isOver()) {
 				Hover5 = false;
 				bet5.setSize(110, 110);
-				bet5.setPosition(845, 190);
+				bet5.setPosition(845, 160);
 			}
 			else;
 		else
 			if(bet5.isOver()) {
 				Hover5 = true;
 				bet5.setSize(120, 120);
-				bet5.setPosition(840, 185);
+				bet5.setPosition(840, 155);
 			}
 		
 		//Check mouse is over bet25
@@ -243,14 +245,14 @@ public class PokerGame extends ApplicationAdapter {
 			if(!bet25.isOver()) {
 				Hover25 = false;
 				bet25.setSize(110, 110);
-				bet25.setPosition(845, 70);
+				bet25.setPosition(845, 40);
 			}
 			else;
 		else
 			if(bet25.isOver()) {
 				Hover25 = true;
 				bet25.setSize(120, 120);
-				bet25.setPosition(840, 65);
+				bet25.setPosition(840, 35);
 			}
 		
 		//Check mouse is over bet50
@@ -258,14 +260,14 @@ public class PokerGame extends ApplicationAdapter {
 			if(!bet50.isOver()) {
 				Hover50 = false;
 				bet50.setSize(110, 110);
-				bet50.setPosition(970, 190);
+				bet50.setPosition(970, 160);
 			}
 			else;
 		else
 			if(bet50.isOver()) {
 				Hover50 = true;
 				bet50.setSize(120, 120);
-				bet50.setPosition(965, 185);
+				bet50.setPosition(965, 155);
 			}
 		
 		//Check mouse is over bet100
@@ -273,14 +275,14 @@ public class PokerGame extends ApplicationAdapter {
 			if(!bet100.isOver()) {
 				Hover100 = false;
 				bet100.setSize(110, 110);
-				bet100.setPosition(970, 70);
+				bet100.setPosition(970, 40);
 			}
 			else;
 		else
 			if(bet100.isOver()) {
 				Hover100 = true;
 				bet100.setSize(120, 120);
-				bet100.setPosition(965, 65);
+				bet100.setPosition(965, 35);
 			}
 }
 
@@ -289,11 +291,18 @@ public class PokerGame extends ApplicationAdapter {
 		backgroundTexture = new Texture("greenfelt.png");
 		background = new Sprite(backgroundTexture);
 		background.setSize(1100, 800);
-		background.setPosition(0, 0);		
+		background.setPosition(0, 0);
+		menuTexture = new Texture("wood_and_border.png");
+		menu = new Sprite(menuTexture);
+		menu.setPosition(810, 0);
+		balanceTexture = new Texture("balance.png");
+		balance = new Sprite(balanceTexture);
+		balance.setSize(190, 190);
+		balance.setPosition(865, 290);	
 		
-		woodbackground = new ImageButton(new SpriteDrawable(new Sprite(new Texture("wood_and_border.png"))));
+		/*woodbackground = new ImageButton(new SpriteDrawable(new Sprite(new Texture("wood_and_border.png"))));
 		woodbackground.setPosition(810, 0);
-		stage.addActor(woodbackground);
+		stage.addActor(woodbackground);*/
 		
 		btnFold = new ImageButton(new SpriteDrawable(new Sprite(new Texture("foldPlain.png"))));
 		btnFold.setPosition(830, 500);
@@ -318,22 +327,22 @@ public class PokerGame extends ApplicationAdapter {
 		stage.addActor(btnSwap);
 		
 		bet5 = new ImageButton(new SpriteDrawable(new Sprite(new Texture("5_chip.png"))));
-		bet5.setPosition(845, 190);
+		bet5.setPosition(845, 160);
 		bet5.setSize(110, 110);
 		stage.addActor(bet5);
 		
 		bet25 = new ImageButton(new SpriteDrawable(new Sprite(new Texture("25_chip.png"))));
-		bet25.setPosition(845, 70);
+		bet25.setPosition(845, 40);
 		bet25.setSize(110, 110);
 		stage.addActor(bet25);
 		
 		bet50 = new ImageButton(new SpriteDrawable(new Sprite(new Texture("50_chip.png"))));
-		bet50.setPosition(970, 190);
+		bet50.setPosition(970, 160);
 		bet50.setSize(110, 110);
 		stage.addActor(bet50);
 		
 		bet100 = new ImageButton(new SpriteDrawable(new Sprite(new Texture("100_chip.png"))));
-		bet100.setPosition(970, 70);
+		bet100.setPosition(970, 40);
 		bet100.setSize(110, 110);
 		stage.addActor(bet100);
 		
@@ -346,13 +355,13 @@ public class PokerGame extends ApplicationAdapter {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("bet5 pressed");
 				bet5.setSize(100, 100);
-				bet5.setPosition(850, 195);
+				bet5.setPosition(850, 165);
 				return true;
 			}
 			public void touchUp(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("bet5 released");
 				bet5.setSize(120, 120);
-				bet5.setPosition(840, 185);
+				bet5.setPosition(840, 155);
 			}
 			
 		});
@@ -361,13 +370,13 @@ public class PokerGame extends ApplicationAdapter {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("bet25 pressed");
 				bet25.setSize(100, 100);
-				bet25.setPosition(850, 75);
+				bet25.setPosition(850, 45);
 				return true;
 			}
 			public void touchUp(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("bet25 released");
 				bet25.setSize(120, 120);
-				bet25.setPosition(840, 65);
+				bet25.setPosition(840, 35);
 			}
 			
 		});
@@ -376,13 +385,13 @@ public class PokerGame extends ApplicationAdapter {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("bet50 pressed");
 				bet50.setSize(100, 100);
-				bet50.setPosition(975, 195);
+				bet50.setPosition(975, 165);
 				return true;
 			}
 			public void touchUp(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("bet50 released");
 				bet50.setSize(120, 120);
-				bet50.setPosition(965, 185);
+				bet50.setPosition(965, 155);
 			}
 			
 		});
@@ -391,13 +400,13 @@ public class PokerGame extends ApplicationAdapter {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("bet100 pressed");
 				bet100.setSize(100, 100);
-				bet100.setPosition(975, 75);
+				bet100.setPosition(975, 45);
 				return true;
 			}
 			public void touchUp(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("bet100 released");
 				bet100.setSize(120, 120);
-				bet100.setPosition(965, 65);
+				bet100.setPosition(965, 35);
 			}
 			
 		});
