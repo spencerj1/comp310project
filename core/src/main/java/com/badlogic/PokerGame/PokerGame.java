@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.utils.Timer;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
@@ -25,6 +26,8 @@ import java.util.List;
 public class PokerGame extends ApplicationAdapter {
 	Stage stage;
 	boolean quit = false;
+	boolean animateUserCards = false;
+	boolean animateAICards = false;
 	boolean sortHover = false;
 	boolean swapHover = false;
 	boolean checkHover = false;
@@ -37,23 +40,23 @@ public class PokerGame extends ApplicationAdapter {
 	boolean Hover100 = false;
 	
 	int cardHeight = 70;
-	SpriteBatch batch;
-	Texture backgroundTexture, menuTexture, balanceTexture;
-	Sprite background, menu, balance;
-	//long time = System.currentTimeMillis();
-	ImageButton img1, img2, img3, img4, img5, imgDeck, bet5, bet50, bet25, bet100, cardback1,
-	cardback2, cardback3, cardback4, cardback5, aicard1, aicard2, aicard3, aicard4, aicard5, woodbackground;
-	ImageButton btnComp, btnUser, btnSort, btnSwap, btnCheck, btnFold, btnCall, btnPlaceBid;
-	
+	int round = 0;
 	int yourBalance = 500; 
 	int userBid = 0;
 	int computerBid = 0;
+	long timer;// = System.currentTimeMillis();
 	
+	SpriteBatch batch;
+	Texture backgroundTexture, menuTexture, balanceTexture;
+	Sprite background, menu, balance;
+	ImageButton img1, img2, img3, img4, img5, imgDeck, bet5, bet50, bet25, bet100, cardback1,
+	cardback2, cardback3, cardback4, cardback5, aicard1, aicard2, aicard3, aicard4, aicard5, woodbackground;
+	ImageButton btnComp, btnUser, btnSort, btnSwap, btnCheck, btnFold, btnCall, btnPlaceBid;
 	Skin skin, skin2, skin3;
-	Label balanceLabel, yourBid, compBid, total;
+	Label balanceLabel, yourBid, compBid, total, roundNum;
 	
-	List<Card> deck, hand = new ArrayList<Card>(), aihand;
-	
+	// Data structures
+	List<Card> deck, aihand, hand = new ArrayList<Card>();
 	boolean[] swap = new boolean[5];  // keeps track of which cards you want swapped
 	
 	@Override
@@ -69,8 +72,7 @@ public class PokerGame extends ApplicationAdapter {
 	
 		// Create the user interface of the game
 		buildUI();
-	
-		updateText();
+		//updateText();
 		
 		// Create a deck of cards to use
 		deck = Card.deck();
@@ -86,6 +88,7 @@ public class PokerGame extends ApplicationAdapter {
 		aihand = drawCards(deck);
 		updateCardImg();
 		updateAiCards();
+		newHand();
 		addCardListeners();
 		
 	}
@@ -103,6 +106,8 @@ public class PokerGame extends ApplicationAdapter {
 		balance.draw(batch);
 		batch.end();
 		stage.act();
+		updateText();
+		animate();
 		stage.draw();
 		
 		// Draw Imagebuttons and other actors (foreground)
@@ -384,9 +389,7 @@ public class PokerGame extends ApplicationAdapter {
 				System.out.println("bet5 pressed");
 				bet5.setSize(100, 100);
 				bet5.setPosition(850, 165);
-				yourBalance = yourBalance - 5;
-				userBid = userBid + 5;
-				updateText();
+				placeBid(5);
 				return true;
 			}
 			public void touchUp(InputEvent event, float x, float y, int pointer, int mouseButton) {
@@ -402,6 +405,7 @@ public class PokerGame extends ApplicationAdapter {
 				System.out.println("bet25 pressed");
 				bet25.setSize(100, 100);
 				bet25.setPosition(850, 45);
+				placeBid(25);
 				return true;
 			}
 			public void touchUp(InputEvent event, float x, float y, int pointer, int mouseButton) {
@@ -417,6 +421,7 @@ public class PokerGame extends ApplicationAdapter {
 				System.out.println("bet50 pressed");
 				bet50.setSize(100, 100);
 				bet50.setPosition(975, 165);
+				placeBid(50);
 				return true;
 			}
 			public void touchUp(InputEvent event, float x, float y, int pointer, int mouseButton) {
@@ -432,6 +437,7 @@ public class PokerGame extends ApplicationAdapter {
 				System.out.println("bet100 pressed");
 				bet100.setSize(100, 100);
 				bet100.setPosition(975, 45);
+				placeBid(100);
 				return true;
 			}
 			public void touchUp(InputEvent event, float x, float y, int pointer, int mouseButton) {
@@ -442,6 +448,7 @@ public class PokerGame extends ApplicationAdapter {
 			
 		});
 		
+		// Add text
 		balanceLabel = new Label(" ", skin);
 		balanceLabel.setPosition(910, 360);
 		balanceLabel.setFontScale((float) 1.2);
@@ -455,13 +462,78 @@ public class PokerGame extends ApplicationAdapter {
 		compBid.setPosition(40, 450);
 		stage.addActor(compBid);
 		
-		total = new Label(" ", skin3);
-		total.setPosition(40, 390);
-		total.setFontScale((float) 1.5);
-		stage.addActor(total);
+		roundNum = new Label(" ", skin2);
+		roundNum.setPosition(45, 750);
+		stage.addActor(roundNum);
 		
+		total = new Label(" ", skin3);
+		total.setPosition(35, 380);
+		//total.setFontScale((float) 1.5);
+		stage.addActor(total);	
 	}
 	
+	public void cardAnimationSetup() {
+		img1.addAction(moveTo(-120, cardHeight,1));
+		img2.addAction(moveTo(-120, cardHeight,1));
+		img3.addAction(moveTo(-120, cardHeight,1));
+		img4.addAction(moveTo(-120, cardHeight,1));
+		img5.addAction(moveTo(-120, cardHeight,1));
+		aicard1.addAction(moveTo(-120, 500,1));
+		aicard2.addAction(moveTo(-120, 500,1));
+		aicard3.addAction(moveTo(-120, 500,1));
+		aicard4.addAction(moveTo(-120, 500,1));
+		aicard5.addAction(moveTo(-120, 500,1));
+		cardback1.addAction(moveTo(-120, 500,1));
+		cardback2.addAction(moveTo(-120, 500,1));
+		cardback3.addAction(moveTo(-120, 500,1));
+		cardback4.addAction(moveTo(-120, 500,1));
+		cardback5.addAction(moveTo(-120, 500,1));
+		
+		timer = System.currentTimeMillis();
+		animateUserCards = true;
+	}
+	
+	public void animate() {  // called in render()
+		if(animateUserCards) {
+			if(System.currentTimeMillis() - timer > 1000)
+				img5.addAction(moveTo(630, cardHeight, (float)0.5));
+			if(System.currentTimeMillis() - timer > 1500)
+				img4.addAction(moveTo(480, cardHeight, (float)0.6));
+			if(System.currentTimeMillis() - timer > 2000)
+				img3.addAction(moveTo(330, cardHeight, (float)0.7));
+			if(System.currentTimeMillis() - timer > 2500)
+				img2.addAction(moveTo(180, cardHeight, (float)0.7));
+			if(System.currentTimeMillis() - timer > 3000) {
+				img1.addAction(moveTo(30, cardHeight, (float)0.7));
+				timer = System.currentTimeMillis();
+				animateUserCards = false;
+				animateAICards = true;
+			}
+		}
+		else if(animateAICards) {
+			if(System.currentTimeMillis() - timer > 1000) {
+				aicard5.addAction(moveTo(630, 500, (float)0.5));
+				cardback5.addAction(moveTo(630, 500, (float)0.5));
+			}
+			if(System.currentTimeMillis() - timer > 1500) {
+				aicard4.addAction(moveTo(480, 500, (float)0.6));
+				cardback4.addAction(moveTo(480, 500, (float)0.6));
+			}
+			if(System.currentTimeMillis() - timer > 2000) {
+				aicard3.addAction(moveTo(330, 500, (float)0.7));
+				cardback3.addAction(moveTo(330, 500, (float)0.7));
+			}
+			if(System.currentTimeMillis() - timer > 2500) {
+				aicard2.addAction(moveTo(180, 500, (float)0.7));
+				cardback2.addAction(moveTo(180, 500, (float)0.7));
+			}
+			if(System.currentTimeMillis() - timer > 3000) {
+				aicard1.addAction(moveTo(30, 500, (float)0.7));
+				cardback1.addAction(moveTo(30, 500, (float)0.7));
+				animateAICards = false;
+			}
+		}
+	}
 	
 	public void updateCardImg() {
 		// Delete existing images
@@ -487,6 +559,12 @@ public class PokerGame extends ApplicationAdapter {
 		img5.setSize(120, 240);
 		img5.setPosition(630, cardHeight);
 		
+		if(animateUserCards) {
+			
+		}
+		
+		
+		
 		stage.addActor(img1);
 		stage.addActor(img2);
 		stage.addActor(img3);
@@ -494,6 +572,8 @@ public class PokerGame extends ApplicationAdapter {
 		stage.addActor(img5);
 		
 		addCardListeners();
+		
+		
 
 	}
 	
@@ -618,15 +698,6 @@ public class PokerGame extends ApplicationAdapter {
 	}
 	
 	public boolean swapCards() {
-		// Add animation to swap cards
-		
-		
-		/*System.out.print("Before:  ");
-		for(int i = 0; i < 5; i++) {
-			System.out.print((i+1) + "." + swap[i] + "   ");
-		}
-		System.out.println();*/
-		
 		// Take out cards from hand
 		if(swap[0]) {
 			//img1.addAction();
@@ -668,6 +739,30 @@ public class PokerGame extends ApplicationAdapter {
 				return true;
 		}
 		return false;
+	}
+	
+	public void newHand() {
+		round = 1;
+		roundNum.setText("Round  1/3");
+		cardAnimationSetup();
+	}
+	
+	public void newRound() {
+		if(round < 3) {
+			round++;
+			roundNum.setText("Round  " + round + "/3");
+		}
+		else
+			newHand();
+	}
+	
+	public boolean placeBid(int amount) {
+		if(amount <= yourBalance) {
+			yourBalance -= amount;
+			userBid += amount;
+		}
+		else return false;
+		return true;
 	}
 	
 	public int checkHand(List<Card> paramHand) {
@@ -830,7 +925,9 @@ public class PokerGame extends ApplicationAdapter {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("btnFold pressed");
-				
+				java.util.Arrays.fill(swap, false);
+				round = 3;
+				swapCards();
 				return true;
 			}
 		});
@@ -942,6 +1039,7 @@ public class PokerGame extends ApplicationAdapter {
 		yourBid.setText("Your Bid = $" + userBid);
 		compBid.setText("Computer Bid = $" + computerBid);
 		total.setText("Total = $" + (userBid + computerBid));
+		roundNum.setText("Round  " + round + "/3");
 	}
 	
 	public void userTurn(int turnNum){
