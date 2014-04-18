@@ -28,6 +28,8 @@ public class PokerGame extends ApplicationAdapter {
 	Stage stage;
 	boolean quit = false;
 	boolean gameStart = true;
+	boolean showWin = false;
+	boolean folded = false;
 	boolean animateUserCards = false;
 	boolean animateAICards = false;
 	boolean sortHover = false;
@@ -44,17 +46,18 @@ public class PokerGame extends ApplicationAdapter {
 	boolean enableSwap = false;
 	
 	int cardHeight = 70;
-	int round = 0;
+	int round = 3;
 	int yourBalance = 500; 
 	int userBid = 0;
 	int computerBid = 0;
-	long timer;// = System.currentTimeMillis();
+	long timer, time;// = System.currentTimeMillis();
 	
 	SpriteBatch batch;
 	Texture backgroundTexture, menuTexture, balanceTexture;
 	Sprite background, menu, balance;
 	ImageButton img1, img2, img3, img4, img5, imgDeck, bet5, bet50, bet25, bet100, cardback1,
-	cardback2, cardback3, cardback4, cardback5, aicard1, aicard2, aicard3, aicard4, aicard5, woodbackground;
+	cardback2, cardback3, cardback4, cardback5, aicard1, aicard2, aicard3, aicard4, aicard5, woodbackground,
+	win, lose, tie, fold;
 	ImageButton btnSort, btnSwap, btnCheck, btnFold, btnCall, btnPlaceBid;
 	int intTotal = 0;
 	Skin skin, skin2, skin3;
@@ -334,6 +337,12 @@ public class PokerGame extends ApplicationAdapter {
 		balance.setSize(190, 190);
 		balance.setPosition(865, 290);	
 		
+		//test
+		/*win = new ImageButton(new SpriteDrawable(new Sprite(new Texture("win.png"))));
+		win.setSize(360, 180);
+		win.setPosition(300, 310);
+		stage.addActor(win);*/
+		
 		btnPlaceBid = new ImageButton(new SpriteDrawable(new Sprite(new Texture("placebidPlain.png"))));
 		btnPlaceBid.setPosition(830, 520);
 		stage.addActor(btnPlaceBid);
@@ -569,8 +578,18 @@ public class PokerGame extends ApplicationAdapter {
 				aicard1.addAction(moveTo(30, 500, (float)0.7));
 				cardback1.addAction(moveTo(30, 500, (float)0.7));
 				animateAICards = false;
+				updateCardImg();
 			}
 		}
+		if(showWin)
+			if(System.currentTimeMillis() - time > 500000) {
+				if(win != null) win.remove();
+				if(lose != null) lose.remove();
+				if(tie != null) tie.remove();
+				if(fold != null) fold.remove();
+				newHand();
+				showWin = false;
+			}
 	}
 	
 	public void updateCardImg() {
@@ -660,61 +679,6 @@ public class PokerGame extends ApplicationAdapter {
 		stage.addActor(cardback5);
 		
 		
-		cardback1.addListener(new InputListener() {
-			@Override
-			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
-				int userScore = 0, aiScore = 0;
-				System.out.println("Card Back 1 pressed");
-				cardback1.addAction(fadeOut(1));
-				cardback2.addAction(fadeOut(1));
-				cardback3.addAction(fadeOut(1));
-				cardback4.addAction(fadeOut(1));
-				cardback5.addAction(fadeOut(1));
-				hand = sortCards(hand);
-				aihand = sortCards(aihand);
-				System.out.print("User ");
-				userScore = checkHand(hand); // put this into different button listener, for check hand
-				System.out.print("AI ");
-				aiScore = checkHand(aihand);
-				if(userScore > aiScore) {
-					System.out.println("You Win!");
-					yourBalance = yourBalance + intTotal;
-					intTotal = 0;
-				}
-				else if(userScore < aiScore) {
-					System.out.println("AI Wins :( ");
-					intTotal = 0;
-				}
-				else {
-					System.out.println("Tie Hand");
-					int winner = checkTieGameWinner(userScore);
-					if(winner == 1){ // user wins
-						System.out.println("You Win by high card!");
-					    yourBalance = yourBalance + intTotal;
-					    intTotal = 0;
-					}
-					else if(winner == 2){
-						System.out.println("AI Wins by high card. :( ");
-						intTotal = 0;
-					}
-					else{
-						System.out.println("Both of you win! Cash is split.");
-						yourBalance = yourBalance + (intTotal/2);
-						intTotal = 0;
-					}
-				}
-					/*if(hand.get(4).intRank() > aihand.get(4).intRank())
-						System.out.println("You Win!");
-					else if(hand.get(4).intRank() < aihand.get(4).intRank())
-						System.out.println("AI Wins :( ");
-					else
-						System.out.println("Tie Game");*/
-				
-				return true;
-			}
-		});
-		
-		
 	}
 	
 	public List<Card> drawCards(List<Card> deck) {
@@ -776,19 +740,101 @@ public class PokerGame extends ApplicationAdapter {
 	}
 	
 	public void newHand() {
-		round = 1;
+		
 		roundNum.setText("Round  1/3");
+		System.out.println(hand.size());
+		if(round > 3 || folded) {
+			for(int b = 0; b < 5; b++) {
+				deck.add(hand.get(b));
+				deck.add(aihand.get(b));
+			}
+			folded = false;
+			deck = shuffle(deck);
+			hand = drawCards(hand);
+			aihand = drawCards(aihand);
+		}
+		round = 1;
 		cardAnimationSetup();
 	}
 	
 	public void newRound() {
+		int userScore = 0;
+		int aiScore = 0;
 		if(round < 3) {
 			round++;
-			roundNum.setText("Round  " + round + "/3");
+			userBid = 0;
+			computerBid = 0;
 		}
 		else { // end of rounds, produce win
+			cardback1.addAction(fadeOut(1));
+			cardback2.addAction(fadeOut(1));
+			cardback3.addAction(fadeOut(1));
+			cardback4.addAction(fadeOut(1));
+			cardback5.addAction(fadeOut(1));
+			hand = sortCards(hand);
+			aihand = sortCards(aihand);
+			System.out.print("User ");
+			userScore = checkHand(hand); // put this into different button listener, for check hand
+			System.out.print("AI ");
+			aiScore = checkHand(aihand);
+			if(userScore > aiScore) {
+				System.out.println("You Win!");
+				win = new ImageButton(new SpriteDrawable(new Sprite(new Texture("win.png"))));
+				win.setSize(360, 180);
+				win.setPosition(300, 310);
+				stage.addActor(win);
+				yourBalance = yourBalance + intTotal;
+				intTotal = 0;
+			}
+			else if(userScore < aiScore) {
+				System.out.println("AI Wins :( ");
+				lose = new ImageButton(new SpriteDrawable(new Sprite(new Texture("lose.png"))));
+				lose.setSize(360, 180);
+				lose.setPosition(300, 310);
+				stage.addActor(lose);
+				intTotal = 0;
+			}
+			else {
+				System.out.println("Tie Hand");
+				int winner = checkTieGameWinner(userScore);
+				if(winner == 1){ // user wins
+					System.out.println("You Win by high card!");
+				    yourBalance = yourBalance + intTotal;
+				    intTotal = 0;
+				    win = new ImageButton(new SpriteDrawable(new Sprite(new Texture("win.png"))));
+					win.setSize(360, 180);
+					win.setPosition(300, 310);
+					stage.addActor(win);
+				}
+				else if(winner == 2){
+					System.out.println("AI Wins by high card. :( ");
+					intTotal = 0;
+					lose = new ImageButton(new SpriteDrawable(new Sprite(new Texture("lose.png"))));
+					lose.setSize(360, 180);
+					lose.setPosition(300, 310);
+					stage.addActor(lose);
+				}
+				else{
+					System.out.println("Both of you win! Cash is split.");
+					yourBalance = yourBalance + (intTotal/2);
+					intTotal = 0;
+					tie = new ImageButton(new SpriteDrawable(new Sprite(new Texture("tie.png"))));
+					tie.setSize(360, 180);
+					tie.setPosition(300, 310);
+					stage.addActor(tie);
+				}
+			}
+				/*if(hand.get(4).intRank() > aihand.get(4).intRank())
+					System.out.println("You Win!");
+				else if(hand.get(4).intRank() < aihand.get(4).intRank())
+					System.out.println("AI Wins :( ");
+				else
+					System.out.println("Tie Game");*/
 			
-			newHand();
+			time = System.currentTimeMillis();
+			showWin = true;
+			round = 1;
+			
 		}
 	}
 	
@@ -955,8 +1001,7 @@ public class PokerGame extends ApplicationAdapter {
 				if(enableSwap == true){
 					swapCards();
 					updateCardImg();
-					userBid = 0;
-					computerBid = 0;
+					newRound();
 				}
 				enableSwap = false;
 				return true;
@@ -968,7 +1013,15 @@ public class PokerGame extends ApplicationAdapter {
 				System.out.println("btnFold pressed");
 				java.util.Arrays.fill(swap, false);
 				round = 3;
-				swapCards();
+				fold = new ImageButton(new SpriteDrawable(new Sprite(new Texture("fold.png"))));
+				fold.setSize(360, 180);
+				fold.setPosition(300, 310);
+				stage.addActor(fold);
+				userBid = 0;
+				computerBid = 0;
+				showWin = true;
+				folded = true;
+				newHand();
 				return true;
 			}
 		});
@@ -989,9 +1042,10 @@ public class PokerGame extends ApplicationAdapter {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("btnCall pressed");
+				int tempBid = userBid;
 				yourBalance = yourBalance - (computerBid - userBid);
 				userBid = computerBid;
-				intTotal = userBid + computerBid;
+				intTotal = intTotal + (userBid - tempBid);
 				enableSwap = true;
 				return true;
 			}
