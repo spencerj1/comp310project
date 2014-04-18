@@ -20,6 +20,7 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 	
 public class PokerGame extends ApplicationAdapter {
@@ -36,18 +37,20 @@ public class PokerGame extends ApplicationAdapter {
 	boolean Hover50 = false;
 	boolean Hover100 = false;
 	
+	boolean enableSwap = false;
+	
 	int cardHeight = 70;
 	SpriteBatch batch;
 	Texture backgroundTexture, menuTexture, balanceTexture;
 	Sprite background, menu, balance;
-	//long time = System.currentTimeMillis();
 	ImageButton img1, img2, img3, img4, img5, imgDeck, bet5, bet50, bet25, bet100, cardback1,
 	cardback2, cardback3, cardback4, cardback5, aicard1, aicard2, aicard3, aicard4, aicard5, woodbackground;
-	ImageButton btnComp, btnUser, btnSort, btnSwap, btnCheck, btnFold, btnCall, btnPlaceBid;
+	ImageButton btnSort, btnSwap, btnCheck, btnFold, btnCall, btnPlaceBid;
 	
 	int yourBalance = 500; 
 	int userBid = 0;
 	int computerBid = 0;
+	int intTotal = 0;
 	
 	Skin skin, skin2, skin3;
 	Label balanceLabel, yourBid, compBid, total;
@@ -87,6 +90,8 @@ public class PokerGame extends ApplicationAdapter {
 		updateCardImg();
 		updateAiCards();
 		addCardListeners();
+		
+		
 		
 	}
 		
@@ -323,9 +328,6 @@ public class PokerGame extends ApplicationAdapter {
 		balance.setSize(190, 190);
 		balance.setPosition(865, 290);	
 		
-		/*woodbackground = new ImageButton(new SpriteDrawable(new Sprite(new Texture("wood_and_border.png"))));
-		woodbackground.setPosition(810, 0);
-		stage.addActor(woodbackground);*/
 		btnPlaceBid = new ImageButton(new SpriteDrawable(new Sprite(new Texture("placebidPlain.png"))));
 		btnPlaceBid.setPosition(830, 520);
 		stage.addActor(btnPlaceBid);
@@ -456,8 +458,8 @@ public class PokerGame extends ApplicationAdapter {
 		stage.addActor(compBid);
 		
 		total = new Label(" ", skin3);
-		total.setPosition(40, 390);
-		total.setFontScale((float) 1.5);
+		total.setPosition(40, 380);
+		//total.setFontScale((float) 1.5);
 		stage.addActor(total);
 		
 	}
@@ -592,14 +594,6 @@ public class PokerGame extends ApplicationAdapter {
 			}
 		});
 		
-		/*btnComp = new ImageButton(new SpriteDrawable(new Sprite(new Texture("computer_hand.png"))));
-		btnUser = new ImageButton(new SpriteDrawable(new Sprite(new Texture("your_hand.png"))));
-		
-		btnComp.setPosition(30, 740);
-		btnUser.setPosition(30, 275);
-		
-		stage.addActor(btnComp);
-		stage.addActor(btnUser);*/
 		
 	}
 	
@@ -821,9 +815,15 @@ public class PokerGame extends ApplicationAdapter {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("btnSort pressed");
+				if(enableSwap == true){
 				swapCards();
 				updateCardImg();
-				return true;	
+				userBid = 0;
+				computerBid = 0;
+				updateText();
+				}
+				enableSwap = false;
+				return true;
 			}
 		});
 		btnFold.addListener(new InputListener() {
@@ -838,6 +838,13 @@ public class PokerGame extends ApplicationAdapter {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("btnCheck pressed");
+				if (computerBid == 0 ){
+					computerBid = AiBet();
+					updateText();
+					if(computerBid == 0){
+						enableSwap = true;
+					}
+				}	
 				return true;
 			}
 		});
@@ -845,6 +852,11 @@ public class PokerGame extends ApplicationAdapter {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("btnCall pressed");
+				yourBalance = yourBalance - (computerBid - userBid);
+				userBid = computerBid;
+				intTotal = userBid + computerBid;
+				updateText();
+				enableSwap = true;
 				return true;
 			}
 		});
@@ -852,6 +864,12 @@ public class PokerGame extends ApplicationAdapter {
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("btnPlaceBid pressed");
+				computerBid = AiBet();
+				intTotal = userBid + computerBid;
+				updateText();
+				if (computerBid == userBid){
+					enableSwap = true;
+				}
 				return true;
 			}
 		});
@@ -941,11 +959,60 @@ public class PokerGame extends ApplicationAdapter {
 		balanceLabel.setText("$" + yourBalance);
 		yourBid.setText("Your Bid = $" + userBid);
 		compBid.setText("Computer Bid = $" + computerBid);
-		total.setText("Total = $" + (userBid + computerBid));
+		total.setText("Total = $" + intTotal);
 	}
 	
-	public void userTurn(int turnNum){
+	public int AiBet(){
+		Random generator = new Random();
+		int x = generator.nextInt(101);
+		int bid = 0;
+
+		if (userBid == 0){
+			if (x < 40 && x >= 0){
+				System.out.println("Ai checks");
+				bid = 0;
+			}
+			else if (x < 60 && x >= 40){
+				System.out.println("Ai bids 10");
+				bid = 10;
+			}
+			else if (x < 75 && x >= 60){
+				System.out.println("Ai bids 25");
+				bid = 25;
+			}
+			else if (x < 90 && x >= 75){
+				System.out.println("Ai bids 75");
+				bid = 75;
+			}
+			else {
+				System.out.println("Ai bids 100");
+				bid = 100;
+			}
+		}
+		if (userBid != 0){
+			if (x < 50 && x >= 0){
+				System.out.println("Ai calls");
+				bid = userBid;
+			}
+			else if (x < 60 && x >= 50){
+				System.out.println("Ai raises 10");
+				bid = userBid + 10;
+			}
+			else if (x < 75 && x >= 60){
+				System.out.println("Ai raises 25");
+				bid = userBid + 25;
+			}
+			else if (x < 90 && x >= 75){
+				System.out.println("Ai raises 75");
+				bid = userBid + 75;
+			}
+			else {
+				System.out.println("Ai raises 100");
+				bid = userBid + 100;
+			}
+		}
+		
+		return bid;
 	}
-	
 	
 }
