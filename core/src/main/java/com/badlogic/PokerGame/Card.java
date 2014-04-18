@@ -28,7 +28,7 @@ public class Card {
 			for (Rank r : Rank.values()) {
 				Card tempCard = new Card(s, r);
 				deck.add(tempCard);
-				System.out.println(tempCard.image);
+				//System.out.println(tempCard.image);
 			}
 		}
 		return deck;
