@@ -650,19 +650,30 @@ public class PokerGame extends ApplicationAdapter {
 				aiScore = checkHand(aihand);
 				if(userScore > aiScore) {
 					System.out.println("You Win!");
+					yourBalance = yourBalance + intTotal;
+					intTotal = 0;
 				}
 				else if(userScore < aiScore) {
 					System.out.println("AI Wins :( ");
+					intTotal = 0;
 				}
 				else {
 					System.out.println("Tie Hand");
 					int winner = checkTieGameWinner(userScore);
-					if(winner == 1) // user wins
+					if(winner == 1){ // user wins
 						System.out.println("You Win by high card!");
-					else if(winner == 2)
+					    yourBalance = yourBalance + intTotal;
+					    intTotal = 0;
+					}
+					else if(winner == 2){
 						System.out.println("AI Wins by high card. :( ");
-					else
+						intTotal = 0;
+					}
+					else{
 						System.out.println("Both of you win! Cash is split.");
+						yourBalance = yourBalance + (intTotal/2);
+						intTotal = 0;
+					}
 				}
 					/*if(hand.get(4).intRank() > aihand.get(4).intRank())
 						System.out.println("You Win!");
@@ -963,7 +974,7 @@ public class PokerGame extends ApplicationAdapter {
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int mouseButton) {
 				System.out.println("btnPlaceBid pressed");
 				computerBid = AiBet();
-				intTotal = userBid + computerBid;
+				intTotal = intTotal + userBid + computerBid;
 				updateText();
 				if (computerBid == userBid){
 					enableSwap = true;
