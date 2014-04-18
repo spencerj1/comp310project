@@ -863,5 +863,4 @@ public class PokerGame extends ApplicationAdapter {
 			}
 		});
 	}
-	
 }
